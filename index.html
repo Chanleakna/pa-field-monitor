@@ -123,7 +123,7 @@ main{padding:12px 14px 32px;}
 <div id="root"></div>
 <script>
 // ── GOOGLE APPS SCRIPT URL — stored in localStorage ────────────
-let GOOGLE_SCRIPT_URL = localStorage.getItem("pa_script_url") || "";
+let GOOGLE_SCRIPT_URL = localStorage.getItem("pa_script_url") || "https://script.google.com/macros/s/AKfycbyHE1H7ForF4yZ9_Mlh1tPMeyxOyg7wf8aVCen308d3J0P4lt3TNfv3gqnxZdaOpu9qvg/exec";
 // ────────────────────────────────────────────────────────────────
 
 const USERS=[
@@ -841,8 +841,8 @@ window.logout=function(){set({user:null,screen:"login",visits:[],active:null,log
 
 window.saveScriptUrl=function(){
   const url=document.getElementById("scriptUrl")?.value?.trim();
-  if(!url||!url.startsWith("https://script.google.com")){
-    alert("Invalid URL. Must start with: https://script.google.com/macros/s/...");
+  if(!url||!url.includes("script.google.com")){
+    alert("Invalid URL. Please paste the full Google Apps Script URL.");
     return;
   }
   localStorage.setItem("pa_script_url",url);
