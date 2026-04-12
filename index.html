@@ -736,11 +736,11 @@ function admHTML(){
   </div>
 
   <!-- Google Script URL Setup -->
-  <div class="card" style="margin-bottom:14px;border-left:4px solid ${GOOGLE_SCRIPT_URL?'var(--ok)':'var(--red)'}">
-    <div style="font-size:12px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">
-      🔗 Google Drive & Sheets Connection
-    </div>
-    <div id="drive-status"></div>
+  <div class="card" style="margin-bottom:14px;border-left:4px solid var(--red)">
+    <div style="font-size:12px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px">🔗 Google Drive &amp; Sheets Connection</div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:10px">Paste your Google Apps Script URL below:</div>
+    <input id="scriptUrl" type="url" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:8px;font-size:16px">
+    <button onclick="saveScriptUrl()" style="background:var(--red);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;width:100%;cursor:pointer;font-family:inherit">💾 Save & Connect</button>
   </div>
   ${["TL001","TL002","TL003","TL004","TL005"].map(tid=>{
     const tv=S.visits.filter(v=>v.tlId===tid&&v.date===t&&v.checkOutTs);
