@@ -339,17 +339,7 @@ function render(){
   </div>`:""}
   <main>${body}</main>`;
   if(S.screen==="login")bindLogin();
-  // Set drive connection status dynamically
-  const dc=document.getElementById("drive-card");
-  const ds=document.getElementById("drive-status");
-  if(dc&&ds){
-    dc.style.borderLeft=GOOGLE_SCRIPT_URL?"4px solid var(--ok)":"4px solid var(--red)";
-    if(GOOGLE_SCRIPT_URL){
-      ds.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:700;color:var(--ok)">Connected to Google</div><div style="font-size:11px;color:var(--t2);margin-top:2px;word-break:break-all">'+GOOGLE_SCRIPT_URL.substring(0,50)+'...</div></div></div><button onclick="disconnectGoogle()" class="btn btn-ghost" style="font-size:12px;padding:8px;color:var(--err)">✕ Disconnect</button>';
-    } else {
-      ds.innerHTML='<div style="font-size:13px;color:var(--t2);margin-bottom:10px">Paste your Google Apps Script URL to connect Google Drive &amp; Sheets.</div><input id="scriptUrl" type="url" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:8px;font-size:16px"><button onclick="saveScriptUrl()" class="btn btn-red" style="font-size:13px;padding:11px">💾 Save &amp; Connect</button>';
-    }
-  }
+  // Drive card rendered statically in admHTML
   // Restore search focus after render
   if(S.screen==="checkin"&&S.step===1){
     const si=document.getElementById("search-input");
