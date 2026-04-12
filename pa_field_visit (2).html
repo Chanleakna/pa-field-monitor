@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>PA Field Visit — DKSH Cambodia</title>
+<style>
+:root{
+  --red:#E2231A;--red2:#B81B13;--red-bg:#FDF3F3;
+  --navy:#1A2B4A;--navy2:#243358;
+  --bg:#F0F2F5;--white:#FFFFFF;--border:#E2E6EC;
+  --t1:#1A2B4A;--t2:#5A6478;--t3:#9AA3B0;
+  --ok:#0A7A42;--ok-bg:#EAF7F0;--ok-bd:#B2DFC7;
+  --warn:#B87400;--warn-bg:#FFFBEC;--warn-bd:#F5D87A;
+  --err:#C0392B;--err-bg:#FDF2F2;--err-bd:#F5C6C6;
+}
+/* ── Reset & Base ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{width:100%;min-height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.4;color:var(--t1);}
+
+/* ── Inputs — font-size MUST be 16px to prevent iOS zoom ── */
+input,select,textarea{
+  font-family:inherit;
+  font-size:16px; /* DO NOT change — prevents iOS zoom on focus */
+  color:var(--t1);background:var(--white);
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 12px;outline:none;width:100%;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color 0.2s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--red);}
+textarea{resize:none;line-height:1.5;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239AA3B0' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+button{-webkit-appearance:none;appearance:none;cursor:pointer;font-family:inherit;}
+
+/* ── Cards & Buttons ── */
+.card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:14px;box-shadow:0 1px 8px rgba(26,43,74,0.07);}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;min-height:46px;}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(226,35,26,0.25);}
+.btn-red:active{background:var(--red2);}
+.btn-red:disabled{background:#CCC;box-shadow:none;cursor:not-allowed;}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-ghost{background:var(--white);color:var(--t2);border:1.5px solid var(--border);}
+
+/* ── Tags ── */
+.tag{display:inline-flex;align-items:center;border-radius:20px;padding:3px 9px;font-size:12px;font-weight:700;white-space:nowrap;}
+.t-ok{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-bd);}
+.t-warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-bd);}
+.t-err{background:var(--err-bg);color:var(--err);border:1px solid var(--err-bd);}
+.t-grey{background:#F0F2F5;color:var(--t2);border:1px solid var(--border);}
+
+/* ── Header ── */
+header{background:var(--navy);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,0.18);}
+.hlogo{background:var(--red);color:#fff;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;letter-spacing:1px;flex-shrink:0;}
+.hbtn{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;min-height:34px;}
+
+/* ── Step Tracker — compact, all 5 fit without scroll ── */
+.tracker{background:var(--white);border-bottom:1px solid var(--border);padding:7px 10px;}
+.tracker-row{display:flex;align-items:center;justify-content:space-between;}
+.tstep{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.tc{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.tc-done{background:var(--ok);color:#fff;}
+.tc-act{background:var(--red);color:#fff;box-shadow:0 0 0 3px rgba(226,35,26,0.12);}
+.tc-idle{background:#EEF0F4;color:var(--t3);}
+.tl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap;}
+.tl-done{color:var(--ok);}
+.tl-act{color:var(--red);}
+.tl-idle{color:var(--t3);}
+.tarr{font-size:11px;font-weight:700;margin-bottom:10px;flex-shrink:0;color:#DDE2EC;}
+.tarr-done{color:var(--ok);}
+
+/* ── Main Content ── */
+main{padding:12px 14px 32px;}
+.irow{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;}
+.irow:last-child{border-bottom:none;}
+.irow-k{font-size:13px;font-weight:600;color:var(--t2);flex-shrink:0;}
+.irow-v{font-size:13px;font-weight:700;text-align:right;flex:1;}
+
+/* ── Star rating ── */
+.star{font-size:28px;cursor:pointer;user-select:none;padding:2px;}
+
+/* ── GPS bar ── */
+.gbar{height:7px;border-radius:4px;overflow:hidden;background:#EEF0F4;}
+
+/* ── Photo 2-col grid ── */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pcard{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--white);}
+.pcard.taken{border-color:var(--ok);background:var(--ok-bg);}
+.ptop{padding:8px 10px 0;display:flex;align-items:flex-start;gap:7px;}
+.plabel{font-size:12px;font-weight:700;color:var(--t1);line-height:1.2;}
+.phint{font-size:10px;color:var(--t2);margin-top:1px;line-height:1.3;}
+.pbot{padding:6px 10px 9px;}
+.pthumb{width:100%;height:72px;object-fit:cover;border-radius:6px;display:block;border:1.5px solid var(--ok-bd);}
+.pempty{height:72px;background:#F8FAFC;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+
+/* ── Store rows ── */
+.srow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;}
+.srow:last-child{border-bottom:none;}
+.srow:active:not(.visited){background:#F4F7FA;}
+.srow.visited{opacity:0.38;pointer-events:none;}
+
+/* ── Action grid ── */
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.acard{border:1px solid var(--border);border-radius:12px;padding:13px 11px;cursor:pointer;font-family:inherit;text-align:left;background:var(--white);min-height:96px;}
+.acard:active{transform:scale(0.97);}
+.acard.primary{background:var(--red);border-color:var(--red);box-shadow:0 4px 12px rgba(226,35,26,0.28);}
+.acard.navy{background:var(--navy);border-color:var(--navy);}
+.acard.off{opacity:0.35;pointer-events:none;background:#EEF0F4;border-color:var(--border);}
+
+/* ── KPI boxes ── */
+.kpi{text-align:center;padding:10px 4px;border-radius:10px;}
+.kpi-l{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;line-height:1.3;}
+.kpi-v{font-size:18px;font-weight:800;}
+
+/* ── Section label ── */
+.slbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// ── GOOGLE APPS SCRIPT URL — stored in localStorage ────────────
+let GOOGLE_SCRIPT_URL = localStorage.getItem("pa_script_url") || "";
+// ────────────────────────────────────────────────────────────────
+
+const USERS=[
+  {id:"TL001",name:"Sean Chamroeun",pw:"1001",av:"SC",role:"tl"},
+  {id:"TL002",name:"Chin Pholly",pw:"1002",av:"CP",role:"tl"},
+  {id:"TL003",name:"Chhay Setha",pw:"1003",av:"CS",role:"tl"},
+  {id:"TL004",name:"Lon Sreypom",pw:"1004",av:"LS",role:"tl"},
+  {id:"TL005",name:"Mao Soklim",pw:"1005",av:"MS",role:"tl"},
+  {id:"ADM01",name:"Supervisor",pw:"0000",av:"AD",role:"admin"},
+];
+const STORES=[
+  {id:"S001",code:281038095,name:"Lao pengly-Phsar Natt",pa:"Chea Makara",tl:"TL001",lat:13.1024855,lng:103.198031},
+  {id:"S002",code:281038107,name:"Sorya Shop",pa:"Chhoun Sreypich",tl:"TL001",lat:13.1015238,lng:103.195548},
+  {id:"S003",code:281059792,name:"Boulinh Baby Shop",pa:"Chea Samphors",tl:"TL001",lat:13.1033551,lng:103.19609},
+  {id:"S004",code:281038603,name:"Kim Chan Tola",pa:"Kieng Vattana",tl:"TL001",lat:13.1025096,lng:103.198227},
+  {id:"S005",code:281038260,name:"Oeng Chi- St 2",pa:"Chea Samnang",tl:"TL001",lat:13.097957,lng:103.197949},
+  {id:"S006",code:281047796,name:"All Star Mart",pa:"Seng chanla",tl:"TL001",lat:13.1017324,lng:103.195337},
+  {id:"S007",code:281038266,name:"Baby World-St 3",pa:"Chorn Tola",tl:"TL001",lat:13.0984932,lng:103.196907},
+  {id:"S008",code:281038087,name:"Chea Neang-St 3",pa:"Seng Kakada",tl:"TL001",lat:13.1024107,lng:103.197796},
+  {id:"S009",code:281043560,name:"KEA THOUCHAKRIYA",pa:"Seng Kakada",tl:"TL001",lat:13.1046789,lng:103.203852},
+  {id:"S010",code:281059047,name:"Baby and Mart Battabong",pa:"Tith Linda",tl:"TL001",lat:13.10815,lng:103.20288},
+  {id:"S011",code:281016459,name:"Apsara-Doem Krolanh",pa:"Tuan Monynich",tl:"TL001",lat:13.378793,lng:103.853328},
+  {id:"S012",code:281043874,name:"Cute Kid Baby Mart",pa:"Toeu Kim leng",tl:"TL001",lat:13.3463,lng:103.8736},
+  {id:"S013",code:281023257,name:"PH. Malis",pa:"Toeu Kim leng",tl:"TL001",lat:13.4427178,lng:103.72826},
+  {id:"S014",code:281014759,name:"SENG HOK DRINK SHOP",pa:"Vat Tang Aeng",tl:"TL001",lat:13.360416,lng:103.875086},
+  {id:"S015",code:281023800,name:"Baby outlet Siem Reap",pa:"Kim Chhomnavy",tl:"TL001",lat:13.360416,lng:103.875086},
+  {id:"S016",code:281030471,name:"Aurora Baby Shop",pa:"Bo Dyna",tl:"TL001",lat:13.357764,lng:103.860416},
+  {id:"S017",code:281016266,name:"Preas Vi Hea II",pa:"Moeng Lida",tl:"TL001",lat:13.3593531,lng:103.880141},
+  {id:"S018",code:281016392,name:"Pharmacie Phirun",pa:"Doeum Sokry",tl:"TL001",lat:13.378753,lng:103.853304},
+  {id:"S019",code:281014761,name:"CHAO SANG HOK GROUP",pa:"Hong Pich Pisey",tl:"TL001",lat:13.360611,lng:103.863738},
+  {id:"S020",code:281016587,name:"NARINO BABY SHOP",pa:"Toeu Kimlinh",tl:"TL001",lat:13.4431907,lng:103.728591},
+  {id:"S021",code:281039255,name:"Sok Yi",pa:"Yuon Viret",tl:"TL001",lat:13.5859213,lng:102.972787},
+  {id:"S022",code:281050808,name:"JK Baby House",pa:"Yany Yamala",tl:"TL001",lat:13.5894461,lng:102.970678},
+  {id:"S023",code:281010792,name:"Seng Nary-Sala Lek 5",pa:"Sos Aisas",tl:"TL001",lat:11.93789,lng:104.71438},
+  {id:"S024",code:281010834,name:"Ouk Sameun",pa:"Soung Sopheak",tl:"TL001",lat:12.254839,lng:104.668112},
+  {id:"S025",code:281050095,name:"Ph Ty Sokrong",pa:"Ly Sokha",tl:"TL001",lat:12.2591071,lng:104.67026},
+  {id:"S026",code:281013235,name:"Samnang Eth",pa:"Som Saokunnea",tl:"TL002",lat:11.0823698,lng:105.795971},
+  {id:"S027",code:281013233,name:"Che Eth",pa:"Vacancy 1",tl:"TL002",lat:11.08232,lng:105.795954},
+  {id:"S028",code:281012884,name:"Rong Borey-Prey Veng",pa:"Un Mech",tl:"TL002",lat:11.4857385,lng:105.322242},
+  {id:"S029",code:281016315,name:"Dy Yarmorng Pharmacy",pa:"Chhoeng Davy",tl:"TL002",lat:11.2621045,lng:105.286938},
+  {id:"S030",code:281021533,name:"Ko Larp - Ratanakiri",pa:"Kham Monyroth",tl:"TL002",lat:13.737522,lng:106.986496},
+  {id:"S031",code:281007815,name:"A Mey-#545",pa:"San Channeat",tl:"TL002",lat:11.9120567,lng:105.652079},
+  {id:"S032",code:281047939,name:"Srey Mich",pa:"Mork Sokuntheavy",tl:"TL002",lat:11.909088,lng:105.65446},
+  {id:"S033",code:281030375,name:"Ph Zony-Chhloung",pa:"Vacancy 2",tl:"TL002",lat:12.2532127,lng:105.974852},
+  {id:"S034",code:281029502,name:"Ching Ching",pa:"Srey Sokna",tl:"TL002",lat:12.7120164,lng:104.88739},
+  {id:"S035",code:281010567,name:"Punleur Thmey-KT",pa:"Chhouen Sreymao",tl:"TL002",lat:12.7076188,lng:104.890138},
+  {id:"S036",code:281010599,name:"Kim Hort-No28",pa:"Chhouen Sreymao",tl:"TL002",lat:12.7164449,lng:104.887523},
+  {id:"S037",code:281008436,name:"Leang Sry",pa:"Khin Phallin",tl:"TL002",lat:11.989763,lng:105.465628},
+  {id:"S038",code:281008297,name:"Meng Nheb I",pa:"Try TingEa",tl:"TL002",lat:11.991065,lng:105.463663},
+  {id:"S039",code:281037703,name:"Meng Nheb II",pa:"Sim Lior",tl:"TL002",lat:11.997014,lng:105.456059},
+  {id:"S040",code:281008465,name:"Sok Synat-KCham",pa:"Heat Sreynich",tl:"TL002",lat:11.9943606,lng:105.448652},
+  {id:"S041",code:281064947,name:"Baby Care - Sensok",pa:"Vacancy 3",tl:"TL002",lat:12.0572,lng:105.0752},
+  {id:"S042",code:281008414,name:"Chea Phalla",pa:"Se Silis",tl:"TL002",lat:11.990978,lng:105.463555},
+  {id:"S043",code:281044760,name:"Baby Town",pa:"Heng Siva",tl:"TL003",lat:11.560449,lng:104.841523},
+  {id:"S044",code:281035718,name:"Chompoo Mart",pa:"Heng Siva",tl:"TL003",lat:11.611033,lng:104.902913},
+  {id:"S045",code:281070501,name:"COMBO BABY STORE",pa:"Soem Liza",tl:"TL003",lat:11.55092,lng:104.86592},
+  {id:"S046",code:281031512,name:"Chhor Lyka Mart",pa:"Bean Sros",tl:"TL003",lat:11.4922,lng:104.8165},
+  {id:"S047",code:281027423,name:"Vattanac Mart",pa:"Kao Ley Meymey",tl:"TL003",lat:11.599465,lng:104.912893},
+  {id:"S048",code:281036956,name:"Neara Baby Shop",pa:"Thol Kimhouy",tl:"TL003",lat:11.127714,lng:105.056904},
+  {id:"S049",code:281060355,name:"Mak Marong Baby",pa:"Chuong songly",tl:"TL003",lat:11.5106391,lng:104.747493},
+  {id:"S050",code:281032560,name:"Pharmacy Brosethpheap",pa:"Sarin Soriya",tl:"TL003",lat:11.5179764,lng:104.775167},
+  {id:"S051",code:281024740,name:"Ei Seak Kim",pa:"Vacancy 5",tl:"TL003",lat:11.212524,lng:104.584118},
+  {id:"S052",code:281037824,name:"Mak Cher In Baby Mart",pa:"Vacancy 6",tl:"TL003",lat:11.2116411,lng:104.583711},
+  {id:"S053",code:281060166,name:"Lay Hork Baby",pa:"Phon Sreymao",tl:"TL003",lat:11.4632259,lng:104.522953},
+  {id:"S054",code:281002302,name:"Sak Sith (Psar Tram khna)",pa:"Nhoem Sreypech",tl:"TL003",lat:11.2892363,lng:104.707531},
+  {id:"S055",code:281028270,name:"Hou Siem",pa:"Vacancy 10",tl:"TL003",lat:11.289216,lng:104.70783},
+  {id:"S056",code:281027707,name:"Ta Som Mart-Takeo",pa:"Neak Sokea",tl:"TL003",lat:11.0124807,lng:104.672159},
+  {id:"S057",code:281026888,name:"Che Sony-Takeo",pa:"Soeurng Phalla",tl:"TL003",lat:10.9874479,lng:104.782088},
+  {id:"S058",code:281028058,name:"Che Phorn-Takeo",pa:"Hem Sreypich",tl:"TL003",lat:10.9812294,lng:104.778334},
+  {id:"S059",code:281055672,name:"Bropai Baby Mart",pa:"Vy Theara",tl:"TL003",lat:10.614515,lng:104.182515},
+  {id:"S060",code:281026568,name:"PH. Preah Mohosoth",pa:"Vacancy 7",tl:"TL003",lat:10.6151884,lng:104.182376},
+  {id:"S061",code:281018998,name:"Somnang Ammaktak",pa:"Sieng Mengju",tl:"TL003",lat:10.6152216,lng:104.18165},
+  {id:"S062",code:281026531,name:"Sokha Penhvong-Kompot",pa:"Vacancy 8",tl:"TL003",lat:10.6127095,lng:104.176565},
+  {id:"S063",code:281044341,name:"Kate Boutique",pa:"Men Sonyta",tl:"TL003",lat:10.608051,lng:104.185757},
+  {id:"S064",code:281018862,name:"Punleur Thmey-Chhuk",pa:"Beav Dany",tl:"TL003",lat:10.836331,lng:104.455857},
+  {id:"S065",code:281020173,name:"Lim lin",pa:"Vacancy 9",tl:"TL003",lat:10.620535,lng:103.52991},
+  {id:"S066",code:281062374,name:"168 Shop",pa:"Ouch Savry",tl:"TL003",lat:10.624087,lng:103.53177},
+  {id:"S067",code:281001733,name:"Pretameak Sosathya",pa:"Heng Sreyvich",tl:"TL003",lat:11.7492387,lng:105.011489},
+  {id:"S068",code:281022267,name:"Sok Lin",pa:"Seng Seakyean",tl:"TL003",lat:11.3675186,lng:105.004098},
+  {id:"S069",code:281009522,name:"Eung Keosreng",pa:"Tong SeakLay",tl:"TL004",lat:11.48459,lng:104.945719},
+  {id:"S070",code:281009768,name:"Heng Sae",pa:"Mao Socheat",tl:"TL004",lat:11.511164,lng:105.049551},
+  {id:"S071",code:281059142,name:"Tia Iamkumang",pa:"Phal Sreyneth",tl:"TL004",lat:11.4841918,lng:104.944276},
+  {id:"S072",code:281023800,name:"Baby Outlet BOKOR",pa:"Kong Ratha",tl:"TL004",lat:11.548688,lng:104.931393},
+  {id:"S073",code:281023800,name:"Baby Outlet Khosnera",pa:"Kea Chakriya",tl:"TL004",lat:11.538,lng:104.916},
+  {id:"S074",code:281023800,name:"Baby Outlet Takhmao",pa:"Rorn Chanthy",tl:"TL004",lat:11.4841918,lng:104.944276},
+  {id:"S075",code:281023800,name:"Baby Outlet Vemean Ekarach",pa:"Liv Sombath",tl:"TL004",lat:11.5542,lng:104.9115},
+  {id:"S076",code:281023800,name:"Baby Outlet Toul Kok",pa:"Thin Sophy",tl:"TL004",lat:11.5774865,lng:104.887736},
+  {id:"S077",code:281023800,name:"Baby Outlet St. 6A",pa:"Sot Phanin",tl:"TL004",lat:11.591133,lng:104.928904},
+  {id:"S078",code:281023800,name:"Baby Outlet Chhab Am Pov",pa:"Samrith Veasna",tl:"TL004",lat:11.538,lng:104.916},
+  {id:"S079",code:281023800,name:"Baby Outlet Chhouk Meas",pa:"Tang Yann",tl:"TL004",lat:11.567353,lng:104.853554},
+  {id:"S080",code:281023800,name:"Baby Outlet Angkor PP",pa:"Houv Heab",tl:"TL004",lat:11.5545636,lng:104.901837},
+  {id:"S081",code:281023800,name:"Baby Outlet Veng Sreng",pa:"Chai Mengchou",tl:"TL004",lat:11.5098364,lng:104.858965},
+  {id:"S082",code:281023800,name:"Baby Outlet Chamkar Doung",pa:"Khorn Chanthoeun",tl:"TL004",lat:11.4922,lng:104.8165},
+  {id:"S083",code:281023800,name:"Baby Outlet KomPuchea Khram",pa:"Bong Chenda",tl:"TL004",lat:11.5106391,lng:104.747493},
+  {id:"S084",code:281023800,name:"Baby Outlet 271",pa:"Bong Chenda",tl:"TL004",lat:11.515773,lng:104.921328},
+  {id:"S085",code:281051030,name:"Baby care Takhmao",pa:"",tl:"TL004",lat:11.473872,lng:104.949007},
+  {id:"S086",code:281051034,name:"Baby Care Beong Snou",pa:"Kloeng Sreymom",tl:"TL004",lat:11.531705,lng:104.950526},
+  {id:"S087",code:281002941,name:"Baby Care Paster",pa:"Chinda Liza",tl:"TL004",lat:11.5599508,lng:104.92497},
+  {id:"S088",code:281051033,name:"Baby Care Sovanna",pa:"Keo Kunthea",tl:"TL004",lat:11.5442847,lng:104.901305},
+  {id:"S089",code:281051914,name:"BABY CARE RUSSEY KEO",pa:"Sorn Dyna",tl:"TL004",lat:11.601258,lng:104.918421},
+  {id:"S090",code:281057965,name:"Baby Care St. 6A",pa:"Sorn Dyna",tl:"TL004",lat:11.591133,lng:104.928904},
+  {id:"S091",code:281036773,name:"YOURAKI",pa:"Vang Chandara",tl:"TL004",lat:11.5105384,lng:104.890529},
+  {id:"S092",code:281006133,name:"Baby World",pa:"Vacancy 11",tl:"TL004",lat:11.5774865,lng:104.887736},
+  {id:"S093",code:281019718,name:"HEALTHY MART",pa:"Noun Khantey",tl:"TL004",lat:11.52382,lng:104.937611},
+  {id:"S094",code:281032328,name:"Careplus Mart",pa:"Mey Leaksmy",tl:"TL004",lat:11.52436,lng:104.937393},
+  {id:"S095",code:281002777,name:"Ang Taminh",pa:"Has Sreypov",tl:"TL004",lat:11.5581439,lng:104.860676},
+  {id:"S096",code:281005921,name:"Hea Kea Baby Shop",pa:"Kourn Ratha",tl:"TL004",lat:11.5545636,lng:104.901837},
+  {id:"S097",code:281043242,name:"M2 Mart",pa:"Mao Somaly",tl:"TL004",lat:11.4462,lng:104.8824},
+  {id:"S098",code:281005921,name:"Hea Kea Veng Sreng",pa:"Soeurng Phanit",tl:"TL004",lat:11.5545636,lng:104.901837},
+  {id:"S099",code:281002942,name:"Baby Anjola-No295",pa:"Lorn vechhor",tl:"TL005",lat:11.537893,lng:104.914128},
+  {id:"S100",code:281002942,name:"Baby Anjola Sen Sok",pa:"Chum Sreymich",tl:"TL005",lat:11.537893,lng:104.914128},
+  {id:"S101",code:281066998,name:"Enfant boutique",pa:"Pov Phane",tl:"TL005",lat:11.573701,lng:104.877916},
+  {id:"S102",code:281032868,name:"FAMILY & BABY",pa:"Vann Sreypov",tl:"TL005",lat:11.5122824,lng:104.883101},
+  {id:"S103",code:281002938,name:"Happy Baby I",pa:"Som Sovon",tl:"TL005",lat:11.541722,lng:104.91791},
+  {id:"S104",code:281057749,name:"Nich Nich",pa:"Vacancy 20",tl:"TL005",lat:11.561846,lng:104.894478},
+  {id:"S105",code:281019635,name:"BB Shop Sen Sok",pa:"Yeang Len",tl:"TL005",lat:11.5739,lng:104.8798},
+  {id:"S106",code:281019635,name:"Baby Heart",pa:"Yeang Len",tl:"TL005",lat:11.5739,lng:104.8798},
+  {id:"S107",code:281057402,name:"Baby Town St.271",pa:"Heang Sicheang",tl:"TL005",lat:11.5098364,lng:104.858965},
+  {id:"S108",code:281025345,name:"Van sokeng Baby",pa:"Heang Sicheang",tl:"TL005",lat:11.5308595,lng:104.910377},
+  {id:"S109",code:281006774,name:"Linda-No279D",pa:"Men Sreyny",tl:"TL005",lat:11.5618575,lng:104.894538},
+  {id:"S110",code:281055644,name:"Sweet baby",pa:"Kong Sreykun",tl:"TL005",lat:11.542986,lng:104.884022},
+  {id:"S111",code:281027660,name:"Monisa PH",pa:"Kong Sreykun",tl:"TL005",lat:11.5268736,lng:104.880832},
+  {id:"S112",code:281048635,name:"Pharmacy Sodaralen",pa:"Khoem Sokly",tl:"TL005",lat:11.5223566,lng:104.916436},
+  {id:"S113",code:281036051,name:"Makro",pa:"Toy Sarom",tl:"TL005",lat:11.5928331,lng:104.881374},
+  {id:"S114",code:281048901,name:"Sovan Baby Mart",pa:"Net Danin",tl:"TL005",lat:11.63217,lng:104.901342},
+  {id:"S115",code:281044597,name:"Mey Kim Baby Mart",pa:"Men Sreymom",tl:"TL005",lat:11.6300085,lng:104.898741},
+  {id:"S116",code:281015879,name:"Nita",pa:"Men Sreymom",tl:"TL005",lat:11.5265,lng:104.9365},
+  {id:"S117",code:281022259,name:"Sak Seth Phum Rersey",pa:"Khem Sreythay",tl:"TL005",lat:11.527105,lng:104.880779},
+  {id:"S118",code:281009463,name:"Sok Len Baby Shop",pa:"Khem Sreythay",tl:"TL005",lat:11.4834031,lng:104.943793},
+  {id:"S119",code:281068504,name:"Keo nimol Toul Kork",pa:"Hean Sreypov",tl:"TL005",lat:11.580613,lng:104.888783},
+  {id:"S120",code:281068544,name:"Keo Nimol 310",pa:"Rotanak Rina",tl:"TL005",lat:11.551185,lng:104.921925},
+  {id:"S121",code:281068506,name:"Keo Nimol 271",pa:"Nou Sovannry",tl:"TL005",lat:11.515773,lng:104.921328},
+  {id:"S122",code:281068503,name:"Keo Nimol Coffee",pa:"Lout Phea",tl:"TL005",lat:11.553577,lng:104.90772},
+  {id:"S123",code:281070030,name:"Keo Nimol Wat Phnom",pa:"Horm Sreyleak",tl:"TL005",lat:11.580556,lng:104.920138},
+  {id:"S124",code:281068505,name:"KEO NIMOL Kosh nera",pa:"Heab Sopheak",tl:"TL005",lat:11.544263,lng:104.960427},
+  {id:"S125",code:281070029,name:"Keo Nimol Chuk Meas",pa:"Meng Chantrea",tl:"TL005",lat:11.567353,lng:104.853554},
+  {id:"S126",code:281046410,name:"Eng Heang",pa:"Vacancy 12",tl:"TL002",lat:11.4859028,lng:105.32431},
+  {id:"S127",code:281002835,name:"Sophanna (Olympich)",pa:"Vacancy 13",tl:"TL004",lat:11.5542,lng:104.9115},
+  {id:"S128",code:281036051,name:"Makro 6A",pa:"Vacancy 14",tl:"TL005",lat:11.5928331,lng:104.881374},
+  {id:"S129",code:281019313,name:"AEON I",pa:"",tl:"TL005",lat:11.548688,lng:104.931393},
+  {id:"S130",code:281019313,name:"AEON II",pa:"Vacancy 15",tl:"TL005",lat:11.548688,lng:104.931393},
+];
+const PHOTOS=[
+  {key:"selfie",icon:"🤳",label:"Selfie at Outlet",hint:"PA at entrance"},
+  {key:"shelf",icon:"📦",label:"Shelf / Planogram",hint:"Shelf & stock level"},
+  {key:"posm",icon:"🪧",label:"POSM & Branding",hint:"Price cards, banners"},
+  {key:"facing",icon:"🔢",label:"Facing vs Comp.",hint:"Our SKUs vs comp."},
+  {key:"overview",icon:"🏪",label:"Outlet Overview",hint:"Wide trade shot"},
+];
+const STEPS=[{n:1,l:"Check In"},{n:2,l:"GPS"},{n:3,l:"Photos"},{n:4,l:"Rating"},{n:5,l:"Check Out"}];
+const GF=300;
+const hav=(a,b,c,d)=>{const R=6371000,dL=((c-a)*Math.PI)/180,dl=((d-b)*Math.PI)/180,x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dl/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));};
+const ft=ts=>ts?new Date(ts).toLocaleTimeString("en",{hour:"2-digit",minute:"2-digit",hour12:true}):"—";
+const fd=ts=>ts?new Date(ts).toLocaleDateString("en",{weekday:"short",day:"numeric",month:"short"}):"—";
+const fdur=ms=>{if(!ms)return"—";const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h>0?`${h}h ${m}m`:m>0?`${m}m ${sc}s`:`${sc}s`;};
+const today=()=>new Date().toISOString().split("T")[0];
+const uid=()=>`V-${Date.now().toString(36).toUpperCase()}`;
+const greet=()=>{const h=new Date().getHours();return h<12?"Good Morning":h<17?"Good Afternoon":"Good Evening";};
+const gc=d=>d===0?"var(--t3)":d>=9999?"var(--warn)":d<=GF?"var(--ok)":d<=GF*2?"var(--warn)":"var(--err)";
+const gt=d=>d===0?"t-grey":d>=9999?"t-warn":d<=GF?"t-ok":d<=GF*2?"t-warn":"t-err";
+const gl=d=>d===0?"No GPS":d>=9999?"⚠ No GPS":d<=GF?"✓ On Site":d<=GF*2?"⚠ Near":"🚨 Far";
+
+let S={user:null,screen:"login",visits:[],active:null,loginId:"",loginPw:"",loginErr:"",showPw:false,
+  step:1,sel:null,gps:null,gpsLoad:false,gpsError:null,photos:{},rating:0,compText:"",compPhotos:[],
+  lastVisit:null,histExpand:null,mapSel:null,tick:Date.now(),toast:null,search:""};
+const set=p=>{Object.assign(S,p);render();};
+const toast=(msg,type="ok")=>{S.toast={msg,type};render();setTimeout(()=>{S.toast=null;render();},3000);};
+const goHome=()=>set({screen:"home",step:1,sel:null,gps:null,gpsError:null,photos:{},rating:0,compText:"",compPhotos:[],gpsLoad:false,search:""});
+
+function render(){
+  const root=document.getElementById("root");
+  if(!S.user){root.innerHTML=loginHTML();bindLogin();return;}
+  const ms=STORES.filter(s=>S.user.role==="admin"||s.tl===S.user.id);
+  const mv=S.visits.filter(v=>S.user.role==="admin"||v.tlId===S.user.id);
+  const tv=mv.filter(v=>v.date===today());
+  const isCI=S.screen==="checkin",isCO=S.screen==="checkout",isSU=S.screen==="summary";
+  const cur=isCI?S.step:isCO?5:0;
+  const tbg=!S.toast?"":S.toast.type==="ok"?"var(--ok-bg)":S.toast.type==="warn"?"var(--warn-bg)":"var(--err-bg)";
+  const tc=!S.toast?"":S.toast.type==="ok"?"var(--ok)":S.toast.type==="warn"?"var(--warn)":"var(--err)";
+  let body="";
+  if(S.screen==="home")    body=homeHTML(ms,tv,mv);
+  if(S.screen==="checkin") body=ciHTML(ms,tv);
+  if(S.screen==="checkout"&&S.active) body=coHTML();
+  if(S.screen==="summary") body=sumHTML(tv,ms);
+  if(S.screen==="history") body=histHTML(mv);
+  if(S.screen==="map")     body=mapHTML(ms,tv);
+  if(S.screen==="admin"&&S.user.role==="admin") body=admHTML();
+
+  const tracker=(isCI||isCO)?`<div class="tracker"><div class="tracker-row">
+    ${STEPS.map((st,i)=>{const st2=st.n<cur?"done":st.n===cur?"act":"idle";
+      return`<div class="tstep"><div class="tc tc-${st2}">${st.n<cur?"✓":st.n}</div><span class="tl tl-${st2}">${st.l}</span></div>
+      ${i<STEPS.length-1?`<div class="tarr ${st.n<cur?"tarr-done":""}">›</div>`:""}`}).join("")}
+  </div></div>`:"";
+
+  root.innerHTML=`
+  ${S.toast?`<div style="position:sticky;top:0;z-index:99;padding:10px 14px;font-size:13px;font-weight:700;text-align:center;background:${tbg};color:${tc};border-bottom:1.5px solid ${tc}">${S.toast.msg}</div>`:""}
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="hlogo">PA</div>
+      <div><div style="font-size:14px;font-weight:800;color:#fff">Field Visit</div><div style="font-size:10px;color:rgba(255,255,255,0.4)">${S.user.name}</div></div>
+    </div>
+    <div style="display:flex;gap:7px;align-items:center">
+      ${S.active&&!isCO&&!isSU?`<span class="tag t-ok" style="cursor:pointer;font-size:11px" onclick="set({screen:'checkout',step:5})">● LIVE</span>`:""}
+      ${(isCI||isCO||isSU)?`<button class="hbtn" onclick="goHome()">🏠 Home</button>`:`<button class="hbtn" onclick="logout()">Logout</button>`}
+    </div>
+  </header>
+  ${tracker}
+  ${S.active&&!isCO&&!isSU?`<div onclick="set({screen:'checkout',step:5})" style="background:var(--ok-bg);border-bottom:2px solid var(--ok);padding:8px 14px;display:flex;align-items:center;gap:8px;cursor:pointer">
+    <span style="width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0"></span>
+    <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ok);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${S.active.storeName}</div>
+    <div style="font-size:11px;color:var(--ok);opacity:0.8">${ft(S.active.checkInTs)} · ${fdur(S.tick-S.active.checkInTs)} — Tap to Check Out</div></div>
+    <span style="font-size:13px;font-weight:800;color:var(--ok)">→</span>
+  </div>`:""}
+  <main>${body}</main>`;
+  if(S.screen==="login")bindLogin();
+  // Set drive connection status dynamically
+  const dc=document.getElementById("drive-card");
+  const ds=document.getElementById("drive-status");
+  if(dc&&ds){
+    dc.style.borderLeft=GOOGLE_SCRIPT_URL?"4px solid var(--ok)":"4px solid var(--red)";
+    if(GOOGLE_SCRIPT_URL){
+      ds.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:20px">✅</span><div><div style="font-size:13px;font-weight:700;color:var(--ok)">Connected to Google</div><div style="font-size:11px;color:var(--t2);margin-top:2px;word-break:break-all">'+GOOGLE_SCRIPT_URL.substring(0,50)+'...</div></div></div><button onclick="disconnectGoogle()" class="btn btn-ghost" style="font-size:12px;padding:8px;color:var(--err)">✕ Disconnect</button>';
+    } else {
+      ds.innerHTML='<div style="font-size:13px;color:var(--t2);margin-bottom:10px">Paste your Google Apps Script URL to connect Google Drive &amp; Sheets.</div><input id="scriptUrl" type="url" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:8px;font-size:16px"><button onclick="saveScriptUrl()" class="btn btn-red" style="font-size:13px;padding:11px">💾 Save &amp; Connect</button>';
+    }
+  }
+  // Restore search focus after render
+  if(S.screen==="checkin"&&S.step===1){
+    const si=document.getElementById("search-input");
+    if(si&&document.activeElement!==si&&S._searchFocused){
+      const v=si.value;si.focus();si.setSelectionRange(v.length,v.length);
+    }
+  }
+}
+
+/* LOGIN */
+function loginHTML(){return`
+<div style="min-height:100vh;background:var(--navy);display:flex;flex-direction:column">
+  <div style="background:linear-gradient(150deg,var(--red),#C01A12);padding:44px 22px 58px;text-align:center">
+    <div style="width:68px;height:68px;background:rgba(255,255,255,0.15);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+      <span style="font-size:26px;font-weight:900;color:#fff;letter-spacing:2px">PA</span>
+    </div>
+    <div style="font-size:22px;font-weight:800;color:#fff">Field Visit</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:5px">PA Team Leader · DKSH Cambodia</div>
+  </div>
+  <div style="flex:1;background:var(--bg);border-radius:22px 22px 0 0;margin-top:-22px;padding:26px 16px">
+    <div class="slbl">Your Name</div>
+    <select id="lid" style="margin-bottom:14px">
+      <option value="">— Select your name —</option>
+      ${USERS.map(u=>`<option value="${u.id}" ${S.loginId===u.id?"selected":""}>${u.name}${u.role==="admin"?" (Admin)":""}</option>`).join("")}
+    </select>
+    <div class="slbl">Password</div>
+    <div style="position:relative;margin-bottom:${S.loginErr?"10px":"18px"}">
+      <input id="lpw" type="${S.showPw?"text":"password"}" placeholder="Enter password" value="${S.loginPw}" style="padding-right:62px">
+      <button onclick="set({showPw:!S.showPw})" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:12px;font-weight:800;color:var(--red);font-family:inherit">${S.showPw?"HIDE":"SHOW"}</button>
+    </div>
+    ${S.loginErr?`<div style="background:var(--err-bg);border:1.5px solid var(--err-bd);border-radius:10px;padding:10px 13px;font-size:13px;font-weight:700;color:var(--err);margin-bottom:13px">⚠ ${S.loginErr}</div>`:""}
+    <button class="btn btn-red" onclick="doLogin()" style="font-size:15px;padding:14px">Log In →</button>
+
+  </div>
+</div>`;}
+function bindLogin(){
+  const l=document.getElementById("lid"),p=document.getElementById("lpw");
+  if(l)l.onchange=e=>{S.loginId=e.target.value;};
+  if(p){p.oninput=e=>{S.loginPw=e.target.value;};p.onkeydown=e=>{if(e.key==="Enter")doLogin();};}
+}
+
+/* HOME */
+function homeHTML(ms,tv,mv){
+  const done=tv.filter(v=>v.checkOutTs);
+  const totalMs=done.reduce((a,v)=>a+(v.duration||0),0);
+  const gpsOk=done.filter(v=>v.checkInOk).length;
+  const actions=[
+    {icon:"📍",title:"Start Outlet Visit",sub:"Begin check-in at outlet",cls:S.active?"off":"primary",fn:S.active?"":"set({screen:'checkin',step:1})"},
+    ...(S.active?[{icon:"🚪",title:"Complete Visit",sub:"Submit outlet call report",cls:"navy",fn:"set({screen:'checkout',step:5})"}]:[{icon:"🗺️",title:"Trade Route Map",sub:"Outlet GPS & coverage",cls:"",fn:"set({screen:'map'})"}]),
+    {icon:"📋",title:"Visit Log & Reports",sub:"Past outlet call history",cls:"",fn:"set({screen:'history'})"},
+    ...(S.user.role==="admin"?[{icon:"⚙️",title:"Performance Dashboard",sub:"Team KPIs & GPS",cls:"",fn:"set({screen:'admin'})"}]:[]),
+  ];
+  return`
+  <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:14px;padding:16px;margin-bottom:12px;overflow:hidden;position:relative">
+    <div style="position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:rgba(226,35,26,0.18)"></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">${greet()}</div>
+    <div style="font-size:18px;font-weight:800;color:#fff;margin-top:2px">${S.user.name}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px">${ms.length} outlets · ${fd(Date.now())}</div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <span style="background:var(--red);color:#fff;font-size:11px;font-weight:800;border-radius:5px;padding:3px 8px">${S.user.id}</span>
+      <span style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:11px;font-weight:700;border-radius:5px;padding:3px 8px">DKSH Cambodia</span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px">
+    ${[["Visited",done.length+(S.active?1:0),"var(--red)"],["In-Trade",fdur(totalMs)||"—","var(--navy)"],["GPS OK",`${gpsOk}/${done.length}`,"var(--ok)"],["Calls",mv.length,"var(--t2)"]].map(([l,v,c])=>`
+    <div class="card kpi" style="padding:9px 4px">
+      <div class="kpi-l">${l}</div>
+      <div class="kpi-v" style="color:${c}">${v}</div>
+    </div>`).join("")}
+  </div>
+  <div class="slbl">Route to Market Actions</div>
+  <div class="agrid" style="margin-bottom:14px">
+    ${actions.map(a=>`<button class="acard ${a.cls}" onclick="${a.fn}">
+      <span style="font-size:24px;margin-bottom:6px;display:block">${a.icon}</span>
+      <div style="font-size:13px;font-weight:800;line-height:1.2;color:${a.cls==="primary"||a.cls==="navy"?"#fff":"var(--navy)"}">${a.title}</div>
+      <div style="font-size:10px;margin-top:3px;line-height:1.3;color:${a.cls==="primary"||a.cls==="navy"?"rgba(255,255,255,0.7)":"var(--t2)"}">${a.sub}</div>
+    </button>`).join("")}
+  </div>
+  ${done.length>0?`
+  <div class="slbl">Today's Outlet Calls</div>
+  <div class="card" style="padding:0 14px">
+    ${done.slice().reverse().map((v,i,a)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;${i<a.length-1?"border-bottom:1px solid var(--border)":""}">
+      <div style="width:34px;height:34px;border-radius:8px;background:var(--red-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏪</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.storeName}</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:2px">${ft(v.checkInTs)} → ${ft(v.checkOutTs)} · ${fdur(v.duration)}</div>
+      </div>
+      <span class="tag ${gt(v.checkInDist)}">${gl(v.checkInDist)}</span>
+    </div>`).join("")}
+  </div>`:""}`;
+}
+
+function sHdr(title,sub,back){
+  return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    ${back!==false?`<button onclick="set({step:${back}})" class="btn btn-ghost" style="width:auto;padding:9px 13px;font-size:13px">← Back</button>`:""}
+    <div><div style="font-size:17px;font-weight:800;color:var(--navy)">${title}</div>${sub?`<div style="font-size:12px;color:var(--t2);margin-top:2px">${sub}</div>`:""}</div>
+  </div>`;}
+
+/* CHECK-IN */
+function ciHTML(ms,tv){
+  if(S.active)return`${sHdr("Outlet Check-In",null,false)}
+    <div class="card" style="border-left:4px solid var(--warn);background:var(--warn-bg)">
+      <div style="font-size:14px;font-weight:800;color:var(--warn)">⚠ Visit in progress</div>
+      <div style="font-size:13px;color:var(--t2);margin-top:4px">At <strong>${S.active.storeName}</strong> — check out first.</div>
+      <button class="btn btn-navy" onclick="set({screen:'checkout',step:5})" style="margin-top:10px;font-size:13px">Complete Visit →</button>
+    </div>`;
+  const visitedIds=new Set(tv.filter(v=>v.checkOutTs).map(v=>v.storeId));
+  if(S.step===1){
+    const fl=ms.filter(s=>!S.search||s.name.toLowerCase().includes(S.search.toLowerCase())||s.pa.toLowerCase().includes(S.search.toLowerCase()));
+    const sorted=[...fl.filter(s=>!visitedIds.has(s.id)),...fl.filter(s=>visitedIds.has(s.id))];
+    return`${sHdr("Select Outlet","Choose the outlet for this call",false)}
+    <input id="search-input" placeholder="Search outlet or PA name…" value="${S.search}" oninput="handleSearch(this.value)" style="margin-bottom:8px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:8px">
+      <span id="outlet-count">${fl.length} outlets</span><span id="outlet-called" style="color:var(--ok)">${visitedIds.size} called · ${fl.length-visitedIds.size} pending</span>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden" id="outlet-list">
+      ${sorted.map(s=>{const done=visitedIds.has(s.id);return`
+      <div class="srow ${done?"visited":""}" onclick="${done?"":"pickStore('"+s.id+"')"}">
+        <div style="width:36px;height:36px;border-radius:8px;background:${done?"#F0F2F5":"var(--red-bg)"};display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${done?"✅":"🏪"}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:${done?"500":"700"};color:${done?"var(--t3)":"var(--navy)"};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:1px">PA: ${s.pa||"—"} · ${s.code}</div>
+        </div>
+        ${done?`<span class="tag t-grey" style="font-size:10px">Called</span>`:`<div style="color:var(--red);font-size:20px;font-weight:700;flex-shrink:0">›</div>`}
+      </div>`}).join("")}
+    </div>`;}
+  const sel=S.sel;
+  if(S.step===2){
+    const dist=S.gps?S.gps.dist:0,c=gc(dist),pct=S.gps?Math.min(100,Math.round((GF/Math.max(dist,1))*100)):0;
+    return`${sHdr("GPS Verification",sel.name,1)}
+    <div class="card" style="background:var(--red-bg);border:1px solid var(--err-bd);margin-bottom:10px;padding:11px 13px">
+      <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:3px">Outlet Call</div>
+      <div style="font-size:14px;font-weight:800;color:var(--navy)">${sel.name}</div>
+      <div style="font-size:12px;color:var(--t2);margin-top:2px">PA: ${sel.pa||"—"} · ${sel.code}</div>
+    </div>
+    ${S.gpsLoad?`<div class="card" style="text-align:center;padding:28px"><div style="font-size:36px;margin-bottom:8px">📡</div><div style="font-size:14px;font-weight:700">Getting GPS…</div><div style="font-size:12px;color:var(--t2);margin-top:4px">Please allow location access when prompted</div></div>`:""}
+    ${S.gpsError&&!S.gps?`<div class="card" style="border:2px solid var(--warn);background:var(--warn-bg);margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:24px">⚠️</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--warn)">GPS Unavailable</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:3px;line-height:1.6">
+            To use GPS you must:<br>
+            1. <strong>Download</strong> the HTML file to your phone<br>
+            2. <strong>Open Files app</strong> → tap the file<br>
+            3. Opens in <strong>Safari directly</strong> — GPS works ✓<br>
+            <span style="color:var(--err);font-size:11px">⚠ Claude.ai, Telegram &amp; WhatsApp all block GPS</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="openInSafari()" class="btn btn-red" style="margin-bottom:8px;font-size:13px;padding:10px">🌐 Open in Safari</button>
+      <button onclick="retryGPS()" class="btn btn-ghost" style="font-size:13px;padding:9px;margin-bottom:8px">↻ Retry GPS</button>
+      <button onclick="skipGPS()" class="btn btn-ghost" style="font-size:12px;padding:8px;color:var(--t3);border-color:var(--border)">Continue without GPS (will be flagged ⚠)</button>
+    </div>`:""}
+    ${S.gps?`<div class="card" style="border:2px solid ${c};margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:${dist<=GF?"var(--ok-bg)":dist<=GF*2?"var(--warn-bg)":"var(--err-bg)"};flex-shrink:0">${dist<=GF?"✅":dist<=GF*2?"⚠️":"🚨"}</div>
+        <div><div style="font-size:13px;font-weight:800;color:${c}">${dist<=GF?"GPS Verified — At Outlet":dist<=GF*2?"Near Outlet — Outside Geofence":"GPS Non-Compliance"}</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:2px">${dist}m · Geofence: ${GF}m · ±${S.gps.acc}m</div></div>
+      </div>
+      <div class="gbar"><div style="height:100%;width:${pct}%;background:${c};transition:width 0.5s;border-radius:4px"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--t3);margin-top:3px;margin-bottom:10px"><span>0m</span><span style="color:${c}">${dist}m</span><span>${GF}m</span></div>
+      <div style="background:var(--bg);border-radius:8px;padding:9px 11px;font-size:12px;line-height:1.9;color:var(--t2)">
+        <div>🔵 <strong>Outlet GPS:</strong> <span style="font-family:monospace">${sel.lat.toFixed(5)}, ${sel.lng.toFixed(5)}</span></div>
+        <div>📍 <strong>Your GPS:</strong> <span style="font-family:monospace;color:${c}">${S.gps.lat.toFixed(5)}, ${S.gps.lng.toFixed(5)}</span></div>
+      </div>
+    </div>`:""}
+    <div style="height:160px;border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-bottom:12px">
+      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${(sel.lng-0.004).toFixed(6)},${(sel.lat-0.004).toFixed(6)},${(sel.lng+0.004).toFixed(6)},${(sel.lat+0.004).toFixed(6)}&layer=mapnik&marker=${sel.lat.toFixed(6)}%2C${sel.lng.toFixed(6)}" style="width:100%;height:100%;border:none" loading="lazy"></iframe>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="https://maps.google.com?q=${sel.lat},${sel.lng}" target="_blank" class="btn btn-ghost" style="flex:1;text-decoration:none;font-size:13px">Maps ↗</a>
+      <button class="btn btn-red" onclick="set({step:3})" style="flex:2;font-size:13px" ${!S.gps?"disabled":""}>Next: Photos →</button>
+    </div>`;}
+  if(S.step===3){
+    const taken=PHOTOS.filter(p=>S.photos[p.key]).length;
+    return`${sHdr("Execution Photos",sel.name,2)}
+    <div style="background:var(--red-bg);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:var(--t2);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+      <span>At least <strong style="color:var(--red)">1 required</strong></span>
+      <span class="tag ${taken===0?"t-grey":taken===PHOTOS.length?"t-ok":"t-warn"}">${taken}/${PHOTOS.length}</span>
+    </div>
+    <div class="pgrid" style="margin-bottom:12px">
+      ${PHOTOS.map(sl=>`
+      <div class="pcard ${S.photos[sl.key]?"taken":""}">
+        <div class="ptop">
+          <span style="font-size:18px;flex-shrink:0">${sl.icon}</span>
+          <div><div class="plabel">${sl.label}</div><div class="phint">${sl.hint}</div></div>
+        </div>
+        <div class="pbot">
+          ${S.photos[sl.key]
+            ?`<div style="position:relative"><img src="${S.photos[sl.key]}" class="pthumb">
+               <div style="position:absolute;top:-4px;right:-4px;background:var(--ok);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800">✓</div></div>
+               <button onclick="retakePhoto('${sl.key}')" style="background:none;border:none;color:var(--t3);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:5px;padding:0">↺ Retake</button>`
+            :`<div class="pempty"><button onclick="takePhoto('${sl.key}')" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">📷 Capture</button></div>`}
+        </div>
+      </div>`).join("")}
+    </div>
+    <button class="btn btn-red" onclick="set({step:4})" ${taken===0?"disabled":""} style="font-size:13px">Next: Display Rating →</button>`;}
+  if(S.step===4){
+    return`${sHdr("Display Rating",sel.name,3)}
+    <div class="card" style="margin-bottom:11px">
+      <div class="slbl">Overall Display Quality</div>
+      <div style="display:flex;justify-content:center;gap:4px;margin-bottom:7px">
+        ${[1,2,3,4,5].map(n=>`<span class="star" onclick="set({rating:${n}})" style="color:${S.rating>=n?"#F5A623":"#DDD"}">${S.rating>=n?"★":"☆"}</span>`).join("")}
+      </div>
+      <div style="text-align:center;font-size:13px;font-weight:700;color:${S.rating>0?"var(--navy)":"var(--t3)"}">
+        ${["Tap a star to rate","Very Poor","Poor","Average","Good","Excellent"][S.rating]}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:11px">
+      <div class="slbl">Competitive Intelligence</div>
+      <textarea id="compTxt" rows="3" placeholder="Competitor promotions, pricing, shelf gains, new SKUs…" style="margin-bottom:9px">${S.compText}</textarea>
+      <div class="slbl">Competitor Photos <span style="font-weight:400;text-transform:none">(max 4)</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        ${S.compPhotos.map((p,i)=>`<div style="position:relative;aspect-ratio:1"><img src="${p}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--border)"><button onclick="rmComp(${i})" style="position:absolute;top:-4px;right:-4px;width:20px;height:20px;background:var(--red);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:11px;font-weight:800">✕</button></div>`).join("")}
+        ${S.compPhotos.length<4?`<button onclick="addComp()" style="aspect-ratio:1;background:var(--bg);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t3);font-size:11px;font-weight:700;font-family:inherit"><span style="font-size:20px">+</span><span>Add</span></button>`:""}
+      </div>
+    </div>
+    <button class="btn btn-red" onclick="doCheckIn()" style="font-size:14px;padding:14px">✓ Check Out Now</button>`;}
+  return"";}
+
+/* CHECK-OUT */
+function coHTML(){
+  const v=S.active,el=S.tick-v.checkInTs,dist=v.checkInDist,c=gc(dist),pct=Math.min(100,Math.round((GF/Math.max(dist,1))*100));
+  const stars=v.rating>0?"★".repeat(v.rating)+"☆".repeat(5-v.rating):"Not rated";
+  return`
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button onclick="goHome()" class="btn btn-ghost" style="width:auto;padding:9px 13px;font-size:13px">← Back</button>
+    <div><div style="font-size:17px;font-weight:800;color:var(--navy)">Ready to Check Out?</div>
+    <div style="font-size:12px;color:var(--t2);margin-top:2px">Review outlet call summary</div></div>
+  </div>
+  <div class="card" style="margin-bottom:10px;border-left:4px solid var(--ok)">
+    <div class="slbl" style="color:var(--ok)">⏱ Call Duration</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;margin-bottom:12px">
+      <div style="background:var(--bg);border-radius:10px;padding:10px 6px">
+        <div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Check-In</div>
+        <div style="font-size:14px;font-weight:800;color:var(--navy)">${ft(v.checkInTs)}</div>
+      </div>
+      <div style="background:var(--bg);border-radius:10px;padding:10px 6px">
+        <div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:4px">Check-Out</div>
+        <div style="font-size:14px;font-weight:800;color:var(--navy)">${ft(Date.now())}</div>
+      </div>
+      <div style="background:var(--red-bg);border-radius:10px;padding:10px 6px;border:1px solid var(--err-bd)">
+        <div style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;margin-bottom:4px">Duration</div>
+        <div style="font-size:14px;font-weight:900;color:var(--red)">${fdur(el)}</div>
+      </div>
+    </div>
+    <div class="irow"><span class="irow-k">Outlet</span><span class="irow-v">${v.storeName}</span></div>
+    <div class="irow"><span class="irow-k">PA Name</span><span class="irow-v">${v.pa||"—"}</span></div>
+    <div class="irow"><span class="irow-k">Team Leader</span><span class="irow-v">${v.tlName}</span></div>
+    <div class="irow"><span class="irow-k">Date</span><span class="irow-v">${fd(v.checkInTs)}</span></div>
+  </div>
+  <div class="card" style="margin-bottom:10px;border:2px solid ${c}">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+      <span style="font-size:20px">${dist<=GF?"✅":dist<=GF*2?"⚠️":"🚨"}</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800;color:${c}">${dist<=GF?"GPS Verified — On Site":dist<=GF*2?"GPS Warning — Near Outlet":"GPS Non-Compliance"}</div>
+      <div style="font-size:11px;color:var(--t2);margin-top:1px">${dist}m from outlet · Limit: ${GF}m</div></div>
+      <span class="tag ${gt(dist)}">${gl(dist)}</span>
+    </div>
+    <div class="gbar" style="height:8px"><div style="height:100%;width:${pct}%;background:${c};border-radius:4px;transition:width 0.5s"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;font-weight:600;margin-top:3px"><span style="color:var(--t3)">0m</span><span style="color:${c};font-weight:800">${dist}m</span><span style="color:var(--t3)">${GF}m</span></div>
+  </div>
+  <div class="card" style="margin-bottom:10px">
+    <div class="slbl">Outlet Audit Summary</div>
+    <div class="irow"><span class="irow-k">Display Quality</span><span style="color:#F5A623;font-size:14px">${stars}</span></div>
+    <div class="irow"><span class="irow-k">Execution Photos</span><span class="irow-v">${Object.keys(v.photos||{}).filter(k=>v.photos[k]).length}/${PHOTOS.length}</span></div>
+    <div class="irow"><span class="irow-k">Competitive Intel</span><span class="irow-v">${v.compText||"None"}</span></div>
+  </div>
+  ${Object.keys(v.photos||{}).filter(k=>v.photos[k]).length>0?`<div class="card" style="margin-bottom:10px">
+    <div class="slbl">Execution Evidence</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
+      ${PHOTOS.filter(p=>v.photos&&v.photos[p.key]).map(p=>`<div style="text-align:center"><img src="${v.photos[p.key]}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px"><div style="font-size:9px;color:var(--t3);margin-top:2px">${p.icon}</div></div>`).join("")}
+    </div>
+  </div>`:""}
+  <div class="card" style="margin-bottom:13px">
+    <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:7px">Call Remarks (optional)</div>
+    <textarea id="coNotes" rows="2" placeholder="Issues, follow-up, trade feedback…" style="margin:0"></textarea>
+  </div>
+  <button class="btn btn-navy" onclick="submitCO()" style="font-size:14px;padding:14px">✓ Submit Outlet Call Report</button>`;}
+
+/* SUMMARY */
+function sumHTML(tv,ms){
+  const v=S.lastVisit;if(!v)return"";
+  const done=tv.filter(x=>x.checkOutTs),rem=ms.filter(s=>!done.find(x=>x.storeId===s.id));
+  const stars=v.rating>0?"★".repeat(v.rating)+"☆".repeat(5-v.rating):"Not rated";
+  return`
+  <div style="text-align:center;padding:18px 0 14px">
+    <div style="width:64px;height:64px;background:var(--ok-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:3px solid var(--ok)"><span style="font-size:28px">✅</span></div>
+    <div style="font-size:18px;font-weight:800;color:var(--ok)">Outlet Call Complete!</div>
+    <div style="font-size:12px;color:var(--t2);margin-top:3px">${v.storeName}</div>
+  </div>
+  <div class="card" style="margin-bottom:10px;border-left:4px solid var(--ok)">
+    <div class="slbl">📋 Call Report Summary</div>
+    ${[["Outlet",v.storeName],["PA",v.pa||"—"],["TL",v.tlName],["Date",fd(v.checkInTs)],["Check-In",ft(v.checkInTs)],["Check-Out",ft(v.checkOutTs)],["Duration",`<strong style="color:var(--red)">${fdur(v.duration)}</strong>`],["GPS",`<span class="tag ${gt(v.checkInDist)}">${gl(v.checkInDist)} · ${v.checkInDist}m</span>`],["Display",`<span style="color:#F5A623">${stars}</span>`],["Photos",`${Object.keys(v.photos||{}).filter(k=>v.photos[k]).length}/${PHOTOS.length}`],["Comp. Intel",v.compText||"None"]].map(([k,val])=>`
+    <div class="irow"><span class="irow-k">${k}</span><span class="irow-v">${val}</span></div>`).join("")}
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:800;color:var(--t2)">Route Coverage Today</div>
+      <span class="tag t-ok">${done.length}/${ms.length} called</span>
+    </div>
+    <div style="background:var(--bg);border-radius:6px;overflow:hidden;height:6px;margin-bottom:8px">
+      <div style="height:100%;width:${Math.round(done.length/Math.max(ms.length,1)*100)}%;background:var(--ok);border-radius:6px;transition:width 0.5s"></div>
+    </div>
+    ${rem.length>0?`<div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:7px">Pending (${rem.length}):</div>
+    ${rem.slice(0,3).map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div>
+      <div style="font-size:13px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</div>
+      <div style="font-size:11px;color:var(--t3)">PA: ${s.pa||"—"}</div>
+    </div>`).join("")}
+    ${rem.length>3?`<div style="font-size:11px;color:var(--t3);padding:6px 0">+${rem.length-3} more</div>`:""}`
+    :`<div style="text-align:center;padding:8px;color:var(--ok);font-size:13px;font-weight:700">🎉 All outlets called today!</div>`}
+  </div>
+  <div style="display:flex;flex-direction:column;gap:9px">
+    ${rem.length>0?`<button class="btn btn-red" onclick="set({screen:'checkin',step:1,sel:null,gps:null,photos:{},rating:0,compText:'',compPhotos:[],gpsLoad:false,search:''})">📍 Next Outlet Call</button>`:""}
+    <button class="btn btn-ghost" onclick="goHome()">🏠 Back to Dashboard</button>
+  </div>`;}
+
+/* HISTORY */
+function histHTML(mv){
+  const sh=mv.filter(v=>v.checkOutTs),bd={};
+  sh.forEach(v=>{if(!bd[v.date])bd[v.date]=[];bd[v.date].push(v);});
+  return`
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <button onclick="set({screen:'home'})" class="btn btn-ghost" style="width:auto;padding:9px 13px;font-size:13px">← Back</button>
+    <div style="font-size:17px;font-weight:800;color:var(--navy)">Visit Log & Reports</div>
+  </div>
+  ${sh.length===0?`<div class="card" style="text-align:center;padding:40px"><div style="font-size:36px;margin-bottom:8px">📋</div><div style="font-size:14px;font-weight:700;color:var(--t3)">No outlet calls yet</div></div>`:""}
+  ${Object.keys(bd).sort().reverse().map(date=>`
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <div style="font-size:11px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:0.7px">${fd(new Date(date))}</div>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+    <div style="font-size:11px;color:var(--t3);font-weight:700">${bd[date].length} call${bd[date].length>1?"s":""}</div>
+  </div>
+  <div class="card" style="margin-bottom:13px;padding:0 14px">
+    ${bd[date].map((v,i,a)=>`
+    <div style="padding:11px 0;${i<a.length-1?"border-bottom:1px solid var(--border)":""}cursor:pointer" onclick="set({histExpand:S.histExpand==='${v.id}'?null:'${v.id}'})">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--red-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏪</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.storeName}</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:2px">${ft(v.checkInTs)} → ${ft(v.checkOutTs)} · <strong>${fdur(v.duration)}</strong>${S.user.role==="admin"?" · "+v.tlName:""}</div>
+        </div>
+        <span class="tag ${gt(v.checkInDist)}" style="font-size:11px">${gl(v.checkInDist)}</span>
+        <span style="color:var(--t3);font-size:12px;margin-left:3px">${S.histExpand===v.id?"▲":"▼"}</span>
+      </div>
+      ${S.histExpand===v.id?`
+      <div style="margin-top:9px;background:var(--bg);border-radius:9px;padding:11px">
+        ${[["PA",v.pa||"—"],["Code",""+v.storeCode],["GPS",v.checkInDist+"m — "+gl(v.checkInDist)],["Rating","★".repeat(v.rating||0)||"Not rated"],["Duration",fdur(v.duration)],...(v.compText?[["Comp.",v.compText]]:[])].map(([k,val])=>`
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--t2);font-weight:600">${k}</span><span style="font-weight:700">${val}</span></div>`).join("")}
+        <a href="https://maps.google.com?q=${v.masterLat},${v.masterLng}" target="_blank" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:var(--red);text-decoration:none">Google Maps ↗</a>
+      </div>`:""}
+    </div>`).join("")}
+  </div>`).join("")}`;}
+
+/* MAP */
+function mapHTML(ms,tv){
+  const vis=new Set(tv.map(v=>v.storeId));
+  return`
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px">
+    <button onclick="set({screen:'home'})" class="btn btn-ghost" style="width:auto;padding:9px 13px;font-size:13px">← Back</button>
+    <div style="font-size:17px;font-weight:800;color:var(--navy)">Trade Route Map</div>
+  </div>
+  <div style="height:185px;border-radius:11px;overflow:hidden;border:1px solid var(--border);margin-bottom:11px;position:relative">
+    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=102.3,10.4,107.6,14.7&layer=mapnik" style="width:100%;height:100%;border:none" loading="lazy"></iframe>
+    <a href="https://www.openstreetmap.org/#map=7/12.5/104.9" target="_blank" style="position:absolute;bottom:7px;right:7px;background:var(--navy);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:4px 9px;text-decoration:none">Full Map ↗</a>
+  </div>
+  <div style="font-size:12px;font-weight:600;color:var(--t3);margin-bottom:9px">${ms.length} outlets · ${vis.size} called · ${ms.length-vis.size} pending</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    ${ms.map(s=>{const v=vis.has(s.id);return`
+    <div class="srow" onclick="set({mapSel:S.mapSel==='${s.id}'?null:'${s.id}'})">
+      <span style="width:9px;height:9px;border-radius:50%;background:${v?"var(--ok)":"var(--border)"};flex-shrink:0"></span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:${v?"500":"700"};color:${v?"var(--t3)":"var(--t1)"};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:1px">PA: ${s.pa||"—"}</div>
+        ${S.mapSel===s.id?`<div style="margin-top:6px;font-size:11px;color:var(--t2);line-height:1.8;padding-bottom:3px">
+          GPS: <span style="font-family:monospace">${s.lat}, ${s.lng}</span> · <strong style="color:var(--red)">${GF}m</strong><br>
+          <a href="https://maps.google.com?q=${s.lat},${s.lng}" target="_blank" style="color:var(--red);font-weight:700;text-decoration:none">Open Google Maps ↗</a>
+        </div>`:""}
+      </div>
+      ${v?`<span class="tag t-ok" style="font-size:11px">✓</span>`:""}
+      <span style="color:var(--t3);font-size:12px">${S.mapSel===s.id?"▲":"▼"}</span>
+    </div>`}).join("")}
+  </div>`;}
+
+/* ADMIN */
+function admHTML(){
+  const t=today();
+  return`
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <button onclick="set({screen:'home'})" class="btn btn-ghost" style="width:auto;padding:9px 13px;font-size:13px">← Back</button>
+    <div style="font-size:17px;font-weight:800;color:var(--navy)">Performance Dashboard</div>
+  </div>
+
+  <!-- Google Script URL Setup -->
+  <div class="card" style="margin-bottom:14px;border-left:4px solid ${GOOGLE_SCRIPT_URL?'var(--ok)':'var(--red)'}">
+    <div style="font-size:12px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">
+      🔗 Google Drive & Sheets Connection
+    </div>
+    <div id="drive-status"></div>
+  </div>
+  ${["TL001","TL002","TL003","TL004","TL005"].map(tid=>{
+    const tv=S.visits.filter(v=>v.tlId===tid&&v.date===t&&v.checkOutTs);
+    const all=S.visits.filter(v=>v.tlId===tid&&v.checkOutTs);
+    const ok=tv.filter(v=>v.checkInOk).length;
+    const ms2=tv.reduce((a,v)=>a+(v.duration||0),0);
+    const u=USERS.find(x=>x.id===tid);
+    const sc=STORES.filter(s=>s.tl===tid).length;
+    return`<div class="card" style="margin-bottom:9px;border-left:4px solid var(--red)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:38px;height:38px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff">${u?.av}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:800">${u?.name}</div><div style="font-size:11px;color:var(--t3);font-weight:700">${tid} · ${sc} outlets</div></div>
+        <span class="tag ${tv.length>0?"t-ok":"t-grey"}" style="font-size:11px">${tv.length>0?"Active":"No calls"}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding-top:9px;border-top:1px solid var(--border)">
+        <div><div style="font-size:18px;font-weight:900;color:var(--red)">${tv.length}</div><div style="font-size:9px;font-weight:700;color:var(--t3)">TODAY</div></div>
+        <div><div style="font-size:18px;font-weight:900;color:var(--navy)">${all.length}</div><div style="font-size:9px;font-weight:700;color:var(--t3)">TOTAL</div></div>
+        <div><div style="font-size:18px;font-weight:900;color:${ok===tv.length&&tv.length>0?"var(--ok)":"var(--warn)"}">${ok}/${tv.length}</div><div style="font-size:9px;font-weight:700;color:var(--t3)">GPS OK</div></div>
+        <div><div style="font-size:12px;font-weight:900;color:var(--t2)">${fdur(ms2)||"—"}</div><div style="font-size:9px;font-weight:700;color:var(--t3)">TIME</div></div>
+      </div>
+    </div>`;}).join("")}
+  <div class="slbl" style="margin-top:6px">GPS Non-Compliance Alerts</div>
+  ${S.visits.filter(v=>!v.checkInOk).length===0
+    ?`<div class="card" style="text-align:center;padding:20px;color:var(--ok)"><div style="font-size:20px;margin-bottom:5px">✅</div><div style="font-size:13px;font-weight:700">No violations recorded</div></div>`
+    :S.visits.filter(v=>!v.checkInOk).slice().reverse().slice(0,10).map(v=>`
+  <div class="card" style="margin-bottom:7px;border-left:4px solid ${v.checkInDist<=GF*2?"var(--warn)":"var(--err)"};background:${v.checkInDist<=GF*2?"var(--warn-bg)":"var(--err-bg)"}">
+    <div style="font-size:13px;font-weight:800">${v.storeName}</div>
+    <div style="font-size:11px;color:var(--t2);margin-top:2px">${v.tlName} · ${fd(v.checkInTs)} ${ft(v.checkInTs)}</div>
+    <div style="font-size:12px;font-weight:800;color:${v.checkInDist<=GF*2?"var(--warn)":"var(--err)"};margin-top:2px">${v.checkInDist<=GF*2?"⚠":"🚨"} ${v.checkInDist}m (limit ${GF}m)</div>
+  </div>`).join("")}`;}
+
+/* ACTIONS */
+/* Search without re-render loss of focus */
+window.handleSearch=function(val){
+  S.search=val;
+  // Re-render only the store list part, not entire page
+  const listEl=document.getElementById("outlet-list");
+  if(!listEl){render();return;}
+  const ms=STORES.filter(s=>S.user.role==="admin"||s.tl===S.user.id);
+  const mv=S.visits.filter(v=>S.user.role==="admin"||v.tlId===S.user.id);
+  const tv=mv.filter(v=>v.date===today());
+  const visitedIds=new Set(tv.filter(v=>v.checkOutTs).map(v=>v.storeId));
+  const fl=ms.filter(s=>!val||s.name.toLowerCase().includes(val.toLowerCase())||s.pa.toLowerCase().includes(val.toLowerCase()));
+  const sorted=[...fl.filter(s=>!visitedIds.has(s.id)),...fl.filter(s=>visitedIds.has(s.id))];
+  document.getElementById("outlet-count").textContent=fl.length+" outlets";
+  document.getElementById("outlet-called").textContent=visitedIds.size+" called · "+(fl.length-visitedIds.size)+" pending";
+  listEl.innerHTML=sorted.map(s=>{const done=visitedIds.has(s.id);return`
+    <div class="srow ${done?"visited":""}" onclick="${done?"":"pickStore('"+s.id+"')"}">
+      <div style="width:36px;height:36px;border-radius:8px;background:${done?"#F0F2F5":"var(--red-bg)"};display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">${done?"✅":"🏪"}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:${done?"500":"700"};color:${done?"var(--t3)":"var(--navy)"};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:1px">PA: ${s.pa||"—"} · ${s.code}</div>
+      </div>
+      ${done?`<span class="tag t-grey" style="font-size:10px">Called</span>`:`<div style="color:var(--red);font-size:20px;font-weight:700;flex-shrink:0">›</div>`}
+    </div>`}).join("");
+};
+
+window.retryGPS=function(){
+  const s=S.sel;if(!s)return;
+  set({gpsLoad:true,gpsError:null});
+  navigator.geolocation?.getCurrentPosition(
+    p=>{
+      const acc=Math.round(p.coords.accuracy);
+      // Reject if accuracy is suspiciously bad (>500m = fake/cached location)
+      if(acc>500){
+        set({gps:null,gpsLoad:false,gpsError:"GPS accuracy too low (±"+acc+"m). You may be in a sandbox or GPS is blocked. Download the HTML file and open directly in Safari."});
+        toast("GPS accuracy too low — open the downloaded file in Safari","warn");
+        return;
+      }
+      const dist=Math.round(hav(p.coords.latitude,p.coords.longitude,s.lat,s.lng));
+      set({gps:{lat:p.coords.latitude,lng:p.coords.longitude,acc,dist,ok:dist<=GF},gpsLoad:false,gpsError:null});
+      if(dist>GF)toast(dist+"m from "+s.name,dist<=GF*2?"warn":"err");},
+    (err)=>{set({gps:null,gpsLoad:false,gpsError:"GPS unavailable: "+(err.code===1?"Permission denied":err.code===2?"Position unavailable":"Timeout")});toast("GPS still unavailable","warn");},
+    {enableHighAccuracy:true,timeout:12000,maximumAge:0});};
+
+window.openInSafari=function(){
+  try {
+    var url=window.location.href;
+    window.open(url,"_blank");
+  } catch(e) {
+    alert("Please copy this URL and open it in Safari: "+window.location.href);
+  }
+};
+
+window.skipGPS=function(){
+  // Allow proceeding but mark GPS as non-compliant with dist=9999
+  const s=S.sel;if(!s)return;
+  set({gps:{lat:s.lat,lng:s.lng,acc:0,dist:9999,ok:false},gpsError:null});
+  toast("Proceeding without GPS — will be flagged for supervisor","warn");
+};
+
+window.doLogin=function(){
+  const id=document.getElementById("lid")?.value,pw=document.getElementById("lpw")?.value;
+  const u=USERS.find(x=>x.id===id&&x.pw===pw);
+  if(!u){set({loginErr:"Wrong name or password."});return;}
+  set({user:u,screen:"home",loginErr:""});};
+window.logout=function(){set({user:null,screen:"login",visits:[],active:null,loginErr:""});};
+
+window.saveScriptUrl=function(){
+  const url=document.getElementById("scriptUrl")?.value?.trim();
+  if(!url||!url.startsWith("https://script.google.com")){
+    alert("Invalid URL. Must start with: https://script.google.com/macros/s/...");
+    return;
+  }
+  localStorage.setItem("pa_script_url",url);
+  GOOGLE_SCRIPT_URL=url;
+  toast("✓ Google Drive & Sheets connected!","ok");
+  render();
+};
+
+window.disconnectGoogle=function(){
+  if(confirm("Disconnect Google Drive & Sheets?")){
+    localStorage.removeItem("pa_script_url");
+    GOOGLE_SCRIPT_URL="";
+    render();
+  }
+};
+window.pickStore=function(id){
+  const s=STORES.find(x=>x.id===id);
+  set({sel:s,step:2,gpsLoad:true,gpsError:null,search:""});
+  navigator.geolocation?.getCurrentPosition(
+    p=>{const dist=Math.round(hav(p.coords.latitude,p.coords.longitude,s.lat,s.lng));
+      set({gps:{lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy),dist,ok:dist<=GF},gpsLoad:false});
+      if(dist>GF)toast(`${dist}m from ${s.name}`,dist<=GF*2?"warn":"err");},
+    (err)=>{set({gps:null,gpsLoad:false,gpsError:"GPS unavailable: "+( err.code===1?"Permission denied":err.code===2?"Position unavailable":"Timeout")});toast("GPS unavailable — allow location access","warn");},
+    {enableHighAccuracy:true,timeout:12000});};
+window.takePhoto=function(key){
+  const i=document.createElement("input");i.type="file";i.accept="image/*";i.capture="environment";
+  i.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      const dataUrl=ev.target.result;
+      const p={...S.photos};
+      p[key]=dataUrl; // Show immediately as preview
+      set({photos:p});
+      // Upload to Google Drive in background
+      uploadPhotoToDrive(key, dataUrl);
+    };
+    r.readAsDataURL(f);
+  };
+  i.click();
+};
+
+window.uploadPhotoToDrive=async function(key, dataUrl){
+  if(!GOOGLE_SCRIPT_URL||GOOGLE_SCRIPT_URL==="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") return;
+  try {
+    const tlName=S.user?S.user.name:"Unknown";
+    const storeName=S.sel?S.sel.name:"Unknown";
+    const date=today();
+    const fileName=tlName.replace(/ /g,"_")+"_"+storeName.replace(/ /g,"_")+"_"+key+"_"+Date.now();
+    const res=await fetch(GOOGLE_SCRIPT_URL,{
+      method:"POST",
+      body:JSON.stringify({action:"uploadPhoto",imageData:dataUrl,fileName,tlName,date})
+    });
+    const json=await res.json();
+    if(json.success){
+      // Replace local base64 with Drive URL for storage efficiency
+      const p={...S.photos};
+      p[key+"_driveUrl"]=json.fileUrl;
+      p[key+"_thumbUrl"]=json.thumbUrl;
+      Object.assign(S,{photos:p});
+      console.log("Photo uploaded to Drive:",json.fileUrl);
+    }
+  } catch(err){
+    console.warn("Drive upload failed (will use local):",err);
+  }
+};
+window.retakePhoto=function(key){const p={...S.photos};delete p[key];set({photos:p});setTimeout(()=>takePhoto(key),50);};
+window.addComp=function(){
+  const i=document.createElement("input");i.type="file";i.accept="image/*";i.capture="environment";
+  i.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>set({compPhotos:[...S.compPhotos,ev.target.result]});r.readAsDataURL(f);};i.click();};
+window.rmComp=function(i){set({compPhotos:S.compPhotos.filter((_,j)=>j!==i)});};
+window.doCheckIn=function(){
+  const txt=document.getElementById("compTxt")?.value||S.compText;
+  const s=S.sel,g=S.gps||{lat:s.lat,lng:s.lng,acc:0,dist:0,ok:true};
+  const v={id:uid(),storeId:s.id,storeCode:s.code,storeName:s.name,masterLat:s.lat,masterLng:s.lng,
+    pa:s.pa,tlId:S.user.id,tlName:S.user.name,checkInTs:Date.now(),checkOutTs:null,
+    checkInLat:g.lat,checkInLng:g.lng,checkInAcc:g.acc,checkInDist:g.dist,checkInOk:g.ok,
+    photos:{...S.photos},rating:S.rating,compText:txt,compPhotos:[...S.compPhotos],duration:null,date:today()};
+  toast(g.ok?`✓ Checked in at ${s.name}`:`⚠ ${g.dist}m from outlet`,g.ok?"ok":"warn");
+  set({active:v,screen:"checkout",step:5,sel:null,gps:null,photos:{},rating:0,compText:txt,compPhotos:[...S.compPhotos],gpsLoad:false});};
+window.submitCO=async function(){
+  const notes=document.getElementById("coNotes")?.value||"";
+  const dur=Date.now()-S.active.checkInTs;
+  const upd={...S.active,checkOutTs:Date.now(),checkOutNotes:notes,duration:dur};
+  set({visits:[...S.visits,upd],active:null,screen:"summary",lastVisit:upd,step:1,coNotes:""});
+  // Save to Google Sheets in background
+  if(GOOGLE_SCRIPT_URL&&GOOGLE_SCRIPT_URL!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){
+    try{
+      await fetch(GOOGLE_SCRIPT_URL,{
+        method:"POST",
+        body:JSON.stringify({action:"submitVisit",visit:upd})
+      });
+      console.log("Visit saved to Google Sheets");
+    }catch(err){console.warn("Sheets save failed:",err);}
+  }
+};
+
+setInterval(()=>{S.tick=Date.now();if(S.user&&(S.screen==="checkout"||S.active))render();},1000);
+render();
+</script>
+</body>
+</html>
