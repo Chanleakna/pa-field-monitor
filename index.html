@@ -4,388 +4,323 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Abbott PA Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#f5f7fa;
-  --white:#ffffff;
-  --s2:#f8fafc;
-  --s3:#f1f5f9;
-  --border:#e4e9f0;
-  --border2:#eef2f7;
-  --text:#111827;
-  --text2:#4b5563;
-  --text3:#9ca3af;
-  --blue:#2563eb;
-  --blue-h:#1d4ed8;
-  --blue-l:#eff6ff;
-  --blue-m:#dbeafe;
-  --green:#059669;
-  --green-l:#ecfdf5;
-  --red:#dc2626;
-  --red-l:#fef2f2;
-  --amber:#d97706;
-  --amber-l:#fffbeb;
-  --purple:#7c3aed;
-  --purple-l:#f5f3ff;
-  --r:8px;
-  --r2:12px;
-  --sh:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.03);
-  --sh2:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+  --bg:#f1f5f9;--white:#fff;--surface2:#f8fafc;--border:#e2e8f0;--border2:#f1f5f9;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --blue:#1d4ed8;--blue2:#1e40af;--blue3:#dbeafe;--blue4:#eff6ff;
+  --green:#059669;--green2:#ecfdf5;--red:#dc2626;--red2:#fef2f2;
+  --amber:#d97706;--amber2:#fffbeb;--purple:#7c3aed;--purple2:#f5f3ff;
+  --r:8px;--r2:12px;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--sh2:0 4px 16px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;line-height:1.5}
 button,input,select{font-family:inherit}
-::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
 
-/* ── LOGIN ── */
-#loginScreen{position:fixed;inset:0;background:var(--s3);display:flex;align-items:center;justify-content:center;z-index:9999}
-.login-box{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:40px 36px;width:360px;box-shadow:var(--sh2)}
-.login-hdr{text-align:center;margin-bottom:28px}
-.login-icon{width:52px;height:52px;background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
-.login-title{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.4px}
-.login-sub{font-size:12px;color:var(--text3);margin-top:3px}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1e3a8a,#1d4ed8 50%,#7c3aed);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:#fff;border-radius:20px;padding:44px 40px;width:380px;box-shadow:0 32px 80px rgba(0,0,0,.25)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-icon{width:56px;height:56px;background:linear-gradient(135deg,#1d4ed8,#7c3aed);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
+.login-title{font-size:22px;font-weight:800;color:#0f172a;letter-spacing:-.5px}
+.login-sub{font-size:12px;color:#64748b;margin-top:4px}
 .lf{margin-bottom:14px}
-.lf label{display:block;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.3px;margin-bottom:6px}
+.lf label{display:block;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+.lf input{width:100%;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:var(--r);padding:11px 44px 11px 14px;font-size:14px;color:#0f172a;outline:none;transition:border-color .2s}
+.lf input:focus{border-color:var(--blue);background:#fff}
 .pw-wrap{position:relative}
-.pw-wrap input{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:var(--r);padding:10px 40px 10px 13px;font-size:14px;color:var(--text);outline:none;transition:border-color .15s}
-.pw-wrap input:focus{border-color:var(--blue);background:var(--white)}
-.pw-toggle{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:var(--text3)}
-.login-err{background:var(--red-l);border:1px solid #fecaca;border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--red);margin-bottom:12px;display:none}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:#94a3b8}
+.login-err{background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--red);margin-bottom:12px;display:none}
 .login-err.show{display:block}
-.login-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .15s}
-.login-btn:hover{background:var(--blue-h)}
-.login-foot{text-align:center;font-size:11px;color:var(--text3);margin-top:14px}
+.login-btn{width:100%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border:none;border-radius:50px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .2s}
+.login-btn:hover{opacity:.9}
 
-/* ── APP ── */
+/* APP */
 #app{display:none;height:100vh;flex-direction:column;overflow:hidden}
 #app.show{display:flex}
 
-/* ── TOPBAR — fully white ── */
-.topbar{height:52px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;box-shadow:var(--sh)}
-.tb-brand{display:flex;align-items:center;gap:9px}
-.tb-icon{width:30px;height:30px;background:var(--blue-l);border:1px solid var(--blue-m);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.tb-name{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.3px}
-.tb-sub{font-size:10px;color:var(--text3)}
-.tb-div{width:1px;height:18px;background:var(--border)}
+/* TOPBAR */
+.topbar{height:54px;background:linear-gradient(135deg,#1e3a8a,#1d4ed8);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(29,78,216,.3)}
+.tb-brand{display:flex;align-items:center;gap:10px}
+.tb-icon{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.tb-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.tb-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:1px}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.live-badge{display:flex;align-items:center;gap:5px;background:var(--green-l);border:1px solid #a7f3d0;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;color:var(--green)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.tb-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)}
-.btn-logout{background:transparent;border:1.5px solid var(--border);border-radius:var(--r);padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s}
-.btn-logout:hover{border-color:#fca5a5;color:var(--red);background:var(--red-l)}
+.topbar-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.6)}
+.btn-signout{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8);cursor:pointer;transition:all .2s}
+.btn-signout:hover{background:rgba(220,38,38,.2);color:#fca5a5}
 
-/* ── FILTER BAR ── */
+/* FILTER BAR */
 .filterbar{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
-.fl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px}
-.fi{background:var(--s2);border:1.5px solid var(--border);border-radius:var(--r);padding:5px 10px;font-size:12px;color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
-.fi:focus,.fi:hover{border-color:var(--blue);background:var(--white)}
-.fsep{width:1px;height:18px;background:var(--border)}
-.pa-count{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:600;color:var(--blue)}
-.btn-refresh{margin-left:auto;background:var(--blue);border:none;border-radius:var(--r);padding:6px 16px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;flex-shrink:0}
-.btn-refresh:hover{background:var(--blue-h)}
+.fl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.fi{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:5px 10px;font-size:12px;color:var(--text);outline:none;transition:border-color .2s}
+.fi:focus,.fi:hover{border-color:var(--blue)}
+.fsep{width:1px;height:20px;background:var(--border)}
+.pa-badge{background:var(--blue4);border:1px solid rgba(29,78,216,.2);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;color:var(--blue)}
+.btn-refresh{margin-left:auto;background:var(--blue);border:none;border-radius:var(--r);padding:6px 16px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
+.btn-refresh:hover{background:var(--blue2)}
 
-/* ── STATUS ── */
+/* STATUS BAR */
 #stbar{padding:7px 20px;font-size:12px;font-weight:500;display:none;align-items:center;gap:8px;border-bottom:1px solid transparent;flex-shrink:0}
 #stbar.show{display:flex}
 #stbar.loading{background:#fffbeb;border-color:#fde68a;color:var(--amber)}
-#stbar.ok{background:var(--green-l);border-color:#a7f3d0;color:var(--green)}
-#stbar.error{background:var(--red-l);border-color:#fecaca;color:var(--red)}
+#stbar.ok{background:#ecfdf5;border-color:#a7f3d0;color:var(--green)}
+#stbar.error{background:#fef2f2;border-color:#fecaca;color:var(--red)}
 
-/* ── TABS ── */
+/* TABS */
 .tabs{background:var(--white);border-bottom:1px solid var(--border);display:flex;padding:0 20px;flex-shrink:0;overflow-x:auto}
 .tab{padding:12px 15px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;user-select:none}
 .tab:hover{color:var(--text2)}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}
 
-/* ── PANELS ── */
+/* PANELS */
 .panels{flex:1;overflow-y:auto;overflow-x:hidden}
-.panel{display:none;padding:20px;animation:fadeUp .18s ease}
+.panel{display:none;padding:16px 20px 24px;animation:fadeUp .18s ease}
 .panel.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── CARD ── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh);margin-bottom:16px;overflow:hidden}
-.card-hdr{padding:13px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--white)}
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden;margin-bottom:14px}
+.card-hdr{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .card-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
 .card-sub{font-size:11px;color:var(--text3)}
-.card-body{padding:16px}
+.card-body{padding:14px 16px}
 
-/* ── STAT CARDS ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:18px 18px 14px;box-shadow:var(--sh);position:relative}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r2) var(--r2) 0 0}
-.sc-blue::before{background:linear-gradient(90deg,var(--blue),var(--purple))}
-.sc-green::before{background:linear-gradient(90deg,var(--green),#10b981)}
-.sc-red::before{background:linear-gradient(90deg,var(--red),#f97316)}
-.sc-amber::before{background:linear-gradient(90deg,var(--amber),#fbbf24)}
-.stat-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px;margin-bottom:8px;text-transform:uppercase}
-.stat-val{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1}
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc-blue::before{background:linear-gradient(90deg,#1d4ed8,#7c3aed)}
+.sc-green::before{background:linear-gradient(90deg,#059669,#10b981)}
+.sc-red::before{background:linear-gradient(90deg,#dc2626,#f97316)}
+.sc-amber::before{background:linear-gradient(90deg,#d97706,#fbbf24)}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1}
 .stat-sub{font-size:11px;color:var(--text2);margin-top:6px}
-.stat-bar{margin-top:10px;height:3px;background:var(--border2);border-radius:99px;overflow:hidden}
-.stat-fill{height:100%;border-radius:99px}
+.stat-bar{margin-top:10px;height:3px;background:var(--border);border-radius:99px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:99px;transition:width .6s ease}
 
-/* ── PHOTO GRID ── */
-.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:10px}
+/* PHOTO GRID */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
 .pcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.pcard:hover{border-color:var(--blue);box-shadow:var(--sh2);transform:translateY(-2px)}
 .pimg{position:relative;width:100%;padding-top:75%;overflow:hidden;background:var(--surface2)}
 .pimg img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
-.pimg-empty{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;color:var(--text3);background:var(--surface2)}
-.pbody{padding:10px 12px}
-.ppa{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pst{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.pchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.pft{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
-.pgps{font-size:10px;color:var(--text3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pdrv{font-size:10px;color:var(--blue);font-weight:600;text-decoration:none;flex-shrink:0;margin-left:4px}
+.pimg-empty{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px}
 .ptype{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;z-index:2}
 .ptype.in{background:rgba(5,150,105,.88);color:#fff}
 .ptype.out{background:rgba(220,38,38,.88);color:#fff}
 .pgpsbadge{position:absolute;bottom:8px;left:8px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;z-index:2}
-.chip.dur{background:#f1f5f9;color:#64748b}
-.pempty{padding:30px;text-align:center;color:var(--text3);font-size:13px}
-.pcard:hover{border-color:var(--blue);box-shadow:var(--sh2);transform:translateY(-2px)}
-.pcard-img-wrap{position:relative;background:var(--s3)}
-.pcard-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
-.pcard-img-ph{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:32px;background:var(--s3);color:var(--text3)}
-.pcard-badge{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
-.pb-in{background:rgba(5,150,105,.85);color:#fff}
-.pb-out{background:rgba(220,38,38,.85);color:#fff}
-.gps-badge{position:absolute;bottom:8px;left:8px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700}
-.gb-ok{background:rgba(5,150,105,.85);color:#fff}
-.gb-warn{background:rgba(217,119,6,.85);color:#fff}
-.gb-far{background:rgba(220,38,38,.85);color:#fff}
-.gb-unk{background:rgba(156,163,175,.8);color:#fff}
-.pcard-info{padding:9px 11px}
-.pcard-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pcard-store{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.pcard-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
-.pcard-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
-.pcard-link{font-size:10px;color:var(--blue);font-weight:600;text-decoration:none}
+.gps-ok{background:rgba(5,150,105,.85);color:#fff}
+.gps-warn{background:rgba(217,119,6,.85);color:#fff}
+.gps-far{background:rgba(220,38,38,.85);color:#fff}
+.gps-unk{background:rgba(148,163,184,.75);color:#fff}
+.pbody{padding:9px 11px}
+.ppa{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pst{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.pchips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.pft{display:flex;align-items:center;justify-content:space-between;margin-top:5px}
+.pgps{font-size:9px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdrv{font-size:10px;color:var(--blue);font-weight:600;text-decoration:none;flex-shrink:0;margin-left:4px}
+.pempty{padding:30px;text-align:center;color:var(--text3);font-size:12px}
 
-/* ── TABLE ── */
-.tbl-wrap{overflow:auto}
+/* TABLE */
+.tbl-wrap{overflow:auto;max-height:320px}
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{padding:9px 13px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap;background:var(--s2);position:sticky;top:0;z-index:2;letter-spacing:.3px}
-.tbl td{padding:9px 13px;border-bottom:1px solid var(--border2);color:var(--text2)}
-.tbl tr:hover td{background:var(--blue-l)}
+.tbl th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid var(--border);white-space:nowrap;background:var(--surface2);position:sticky;top:0;z-index:2}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--text2);vertical-align:middle}
+.tbl tr:hover td{background:var(--blue4)}
 .tbl tr:last-child td{border-bottom:none}
-.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-.chip-in{background:var(--green-l);color:var(--green)}
-.chip-out{background:var(--red-l);color:var(--red)}
-.chip-pend{background:var(--s3);color:var(--text3);border:1px solid var(--border)}
-.chip-leave{background:var(--blue-l);color:var(--blue)}
-.chip-mat{background:var(--amber-l);color:var(--amber)}
+.tbl-thumb{width:44px;height:33px;object-fit:cover;border-radius:5px;background:var(--surface2);display:block}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;gap:3px}
+.chip.in,.chip-in{background:var(--green2);color:var(--green)}
+.chip.out,.chip-out{background:var(--red2);color:var(--red)}
+.chip.dur{background:var(--surface2);color:var(--text3)}
+.chip-pend{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.chip-leave{background:var(--blue4);color:var(--blue)}
 
-/* ── TL CARDS ── */
-.tl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(335px,1fr));gap:14px}
+/* TL PERFORMANCE */
+.tl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
 .tl-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
-.tl-hdr{padding:13px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:11px}
-.tl-av{width:36px;height:36px;border-radius:9px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tl-hdr{padding:13px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px}
+.tl-av{width:36px;height:36px;border-radius:10px;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tl-name{font-size:13px;font-weight:700;color:var(--text)}
-.tl-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.tl-prog-area{padding:8px 16px 10px;border-bottom:1px solid var(--border2)}
-.tl-prog-bar{height:3px;background:var(--border2);border-radius:99px;overflow:hidden}
-.tl-prog-fill{height:100%;border-radius:99px}
-.tl-prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px}
-.tl-pa-list{max-height:290px;overflow-y:auto}
-.tl-pa-row{display:flex;align-items:center;gap:9px;padding:7px 16px;border-bottom:1px solid var(--border2);transition:background .1s}
-.tl-pa-row:last-child{border-bottom:none}
-.tl-pa-row:hover{background:var(--s2)}
-.tl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.td-in{background:var(--green)}.td-out{background:var(--red)}.td-pend{background:var(--border)}.td-leave{background:var(--blue)}.td-off{background:var(--green)}
-.tl-pa-info{flex:1;min-width:0}
-.tl-pa-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-pa-store{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-pa-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0}
-.tl-pa-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0}
-.tpc-in{background:var(--green-l);color:var(--green)}
-.tpc-out{background:var(--red-l);color:var(--red)}
-.tpc-pend{background:var(--s3);color:var(--text3)}
-.tpc-leave{background:var(--blue-l);color:var(--blue)}
-.rem-tag{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--amber-l);color:var(--amber);border:1px solid rgba(217,119,6,.15);margin-left:3px}
-
-/* ── MULTI-SELECT DROPDOWN ── */
-.ms-wrap{position:relative;display:inline-block}
-.ms-btn{display:flex;align-items:center;gap:6px;background:var(--s2);border:1.5px solid var(--border);border-radius:var(--r);padding:5px 11px;font-size:12px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap;transition:all .15s;user-select:none;min-width:110px}
-.ms-btn:hover,.ms-btn.open{border-color:var(--blue);background:var(--white)}
-.ms-btn-lbl{flex:1;text-align:left;font-size:12px}
-.ms-count-badge{background:var(--blue);color:#fff;border-radius:99px;padding:1px 6px;font-size:9px;font-weight:700;line-height:1.4}
-.ms-caret{font-size:8px;color:var(--text3);transition:transform .15s;flex-shrink:0}
-.ms-btn.open .ms-caret{transform:rotate(180deg)}
-.ms-menu{position:absolute;top:calc(100% + 4px);left:0;min-width:190px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06);z-index:700;overflow:hidden;animation:msIn .12s ease}
-@keyframes msIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.ms-bar{display:flex;gap:6px;padding:8px 10px;border-bottom:1px solid var(--border2)}
-.ms-bar-btn{flex:1;background:transparent;border:1.5px solid var(--border);border-radius:6px;padding:4px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .12s;font-family:inherit}
-.ms-bar-btn.a:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
-.ms-bar-btn.c:hover{border-color:var(--red);color:var(--red);background:var(--red-l)}
-.ms-list{max-height:220px;overflow-y:auto}
-.ms-item{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;transition:background .1s;user-select:none}
-.ms-item:hover{background:var(--s2)}
-.ms-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;background:var(--white)}
-.ms-chk.on{background:var(--blue);border-color:var(--blue)}
-.ms-chk.on::after{content:'✓';font-size:9px;color:#fff;font-weight:700}
-.ms-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.ms-item-lbl{font-size:12px;color:var(--text);font-weight:500}
-.ms-empty{padding:14px;text-align:center;font-size:11px;color:var(--text3)}
-
-/* ── OT TOOLBAR ── */
-.ot-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;box-shadow:var(--sh)}
-.pill-grp{display:flex;gap:2px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r);padding:2px}
-.pill{padding:5px 13px;border:none;border-radius:6px;font-size:11px;font-weight:600;color:var(--text2);background:transparent;cursor:pointer;transition:all .15s}
-.pill.active{background:var(--white);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.bar-sep{width:1px;height:20px;background:var(--border)}
-.bar-lbl{font-size:11px;font-weight:600;color:var(--text3)}
-
-/* ── RANK LIST ── */
-.rank-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2)}
-.rank-item:last-child{border-bottom:none}
-.rank-n{width:24px;text-align:center;font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
-.rn1{color:#f59e0b}.rn2{color:#6b7280}.rn3{color:#92400e}
-.rank-info{flex:1;min-width:0}
-.rank-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rank-code{font-size:10px;color:var(--text3)}
-.rank-bar-row{display:flex;align-items:center;gap:8px;margin-top:4px}
-.rank-bar{flex:1;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
-.rank-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--purple))}
-.rank-val{font-size:11px;font-weight:700;color:var(--text);flex-shrink:0;min-width:54px;text-align:right}
-
-/* ── OT MATRIX ── */
-.mx-scroll{overflow:auto;max-height:450px}
-.mx-tbl{border-collapse:separate;border-spacing:0;font-size:11px;min-width:100%}
-.mx-tbl th{padding:8px 10px;background:var(--s2);color:var(--text3);font-size:10px;font-weight:600;letter-spacing:.3px;white-space:nowrap;position:sticky;top:0;z-index:3;border-bottom:1px solid var(--border)}
-.mx-tbl th.sl{position:sticky;z-index:4}
-.mx-tbl td{padding:6px 10px;border-bottom:1px solid var(--border2);white-space:nowrap}
-.mx-tbl td.sl{position:sticky;background:var(--white);z-index:2;border-right:1px solid var(--border2)}
-.mx-tbl tr:hover td{background:var(--blue-l)}
-.mx-tbl tr:hover td.sl{background:#dbeafe}
-.mx-val{font-size:11px;font-weight:700;color:var(--text)}
-.mx-sub{font-size:9px;color:var(--text3)}
-
-/* ── MTD MATRIX ── */
-.mtd-scroll{overflow:auto;max-height:520px}
-.mtd-tbl{border-collapse:separate;border-spacing:0;font-size:11px;min-width:100%}
-.mtd-tbl th{padding:8px 9px;background:var(--s2);color:var(--text3);font-size:10px;font-weight:600;letter-spacing:.3px;white-space:nowrap;position:sticky;top:0;z-index:3;border-bottom:1px solid var(--border)}
-.mtd-tbl th.col-pa{position:sticky;left:0;z-index:5;min-width:155px;background:var(--s2)}
-.mtd-tbl th.col-tl{position:sticky;left:155px;z-index:5;min-width:68px;background:var(--s2)}
-.mtd-tbl td{padding:6px 8px;border-bottom:1px solid var(--border2)}
-.mtd-tbl td.col-pa{position:sticky;left:0;z-index:2;background:var(--white);border-right:1px solid var(--border2)}
-.mtd-tbl td.col-tl{position:sticky;left:155px;z-index:2;background:var(--white);border-right:1px solid var(--border2)}
-.mtd-tbl tr:hover td{background:var(--blue-l)}
-.mtd-tbl tr:hover td.col-pa,.mtd-tbl tr:hover td.col-tl{background:#dbeafe}
-.pa-nm{font-size:12px;font-weight:700;color:var(--text)}
-.pa-st{font-size:10px;color:var(--text3)}
-.day-in{background:rgba(5,150,105,.05)}
-.day-short{background:rgba(217,119,6,.05)}
-.day-abs{background:transparent}
-.day-leave{background:rgba(37,99,235,.05)}
-.day-off{background:rgba(5,150,105,.05)}
-.day-ph{background:rgba(124,58,237,.05)}
-.day-today{background:rgba(37,99,235,.06)!important}
-.hdr-today{background:rgba(37,99,235,.08)!important;color:var(--blue)!important;font-weight:700!important}
-.hdr-ph{background:rgba(124,58,237,.06)!important;color:var(--purple)!important}
-.score-hi{color:var(--green);font-weight:700}
-.score-mid{color:var(--amber);font-weight:700}
-.score-lo{color:var(--red);font-weight:700}
-.score-det{font-size:9px;color:var(--text3)}
-
-/* ── INCENTIVE ── */
-.inc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:12px}
-.inc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
-.inc-hdr{padding:12px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px}
-.inc-av{width:30px;height:30px;border-radius:8px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.inc-tl-nm{font-size:12px;font-weight:700;color:var(--text)}
-.inc-row{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--border2)}
-.inc-row:last-child{border-bottom:none}
-.inc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.inc-pa-nm{font-size:11px;color:var(--text2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.inc-st{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;flex-shrink:0}
-.is-g{background:var(--green-l);color:var(--green)}
-.is-a{background:var(--amber-l);color:var(--amber)}
-.is-r{background:var(--red-l);color:var(--red)}
-.is-gr{background:var(--s3);color:var(--text3)}
-
-/* ── INSIGHTS ── */
-.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.ins-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
-.ins-hdr{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:7px}
-.ins-ico{font-size:13px}
-.ins-ttl{font-size:12px;font-weight:700;color:var(--text);flex:1}
-.ins-cnt{font-size:10px;color:var(--text3)}
-.ins-row{display:flex;align-items:center;gap:9px;padding:8px 16px;border-bottom:1px solid var(--border2);transition:background .1s}
-.ins-row:hover{background:var(--s2)}
-.ins-row:last-child{border-bottom:none}
-.ins-av{width:28px;height:28px;border-radius:7px;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ins-info{flex:1;min-width:0}
-.ins-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ins-sub{font-size:10px;color:var(--text3)}
-.ins-val{font-size:13px;font-weight:800;color:var(--text)}
-.rec{padding:11px 16px;border-bottom:1px solid var(--border2)}
-.rec:last-child{border-bottom:none}
-.rec-title{font-size:12px;font-weight:700;margin-bottom:2px}
-.rec-body{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:3px}
-.rec-act{font-size:10px;font-weight:600;color:var(--blue)}
-.rec.ok .rec-title{color:var(--green)}
-.rec.warn .rec-title{color:var(--amber)}
-.rec.danger .rec-title{color:var(--red)}
-
-/* ── LIGHTBOX ── */
-#lb{display:none;position:fixed;inset:0;background:rgba(17,24,39,.5);z-index:9000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
-#lb.open{display:flex}
-.lb-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;max-width:440px;width:100%;box-shadow:0 24px 48px rgba(0,0,0,.18)}
-.lb-img{width:100%;max-height:270px;object-fit:cover;display:block;background:var(--s3)}
-.lb-info{padding:15px 16px}
-.lb-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:11px}
-.lb-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px}
-.lb-item{background:var(--s2);border-radius:var(--r);padding:8px 10px}
-.lb-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px;margin-bottom:2px}
-.lb-val{font-size:12px;font-weight:600;color:var(--text)}
-.lb-btns{display:flex;gap:8px}
-.lb-btn{flex:1;padding:8px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid}
-.lb-close{background:var(--s2);border-color:var(--border);color:var(--text2)}
-.lb-close:hover{border-color:var(--red);color:var(--red)}
-.lb-map{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
-.lb-map:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
-
-/* ── MISC ── */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.no-data{padding:32px;text-align:center;color:var(--text3);font-size:12px}
-.empty-icon{font-size:24px;margin-bottom:8px;opacity:.4}
-
-/* ── TL PERFORMANCE MISSING CSS ── */
 .tl-stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
 .tl-stat{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
-.tl-stat.in{background:#ecfdf5;color:#059669}
-.tl-stat.out{background:#fef2f2;color:#dc2626}
-.tl-stat.pend{background:#f8fafc;color:#94a3b8}
-.tl-stat.leave{background:#eff6ff;color:#1d4ed8}
-.tl-stat.cov{background:#eff6ff;color:#1d4ed8}
+.tl-stat.in{background:var(--green2);color:var(--green)}
+.tl-stat.out{background:var(--red2);color:var(--red)}
+.tl-stat.pend{background:var(--surface2);color:var(--text3)}
+.tl-stat.cov{background:var(--blue4);color:var(--blue)}
 .tl-prog{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin:8px 16px 0}
 .tl-progf{height:100%;border-radius:99px;transition:width .5s ease}
-.pa-list{max-height:320px;overflow-y:auto}
-.pa-item{display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid var(--border2);transition:background .1s}
+.pa-list{max-height:300px;overflow-y:auto}
+.pa-item{display:flex;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--border2);transition:background .1s}
 .pa-item:last-child{border-bottom:none}
 .pa-item:hover{background:var(--surface2)}
 .pa-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.pa-dot.in{background:#059669}
-.pa-dot.out{background:#dc2626}
+.pa-dot.in{background:var(--green)}
+.pa-dot.out{background:var(--red)}
 .pa-dot.pend{background:#cbd5e1}
-.pa-dot.leave{background:#1d4ed8}
-.pa-iname{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-iname{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pa-istore{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pa-itime{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;margin:0 6px}
 .pa-ibadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap}
-.pa-ibadge.in{background:#ecfdf5;color:#059669}
-.pa-ibadge.out{background:#fef2f2;color:#dc2626}
-.pa-ibadge.pend{background:#f8fafc;color:#94a3b8;border:1px solid var(--border)}
-.pa-ibadge.leave{background:#eff6ff;color:#1d4ed8}
+.pa-ibadge.in{background:var(--green2);color:var(--green)}
+.pa-ibadge.out{background:var(--red2);color:var(--red)}
+.pa-ibadge.pend{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.rem-tag{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--amber2);color:var(--amber);border:1px solid rgba(217,119,6,.2);margin-left:3px;white-space:nowrap}
 
+/* OFF-TAKE TOOLBAR */
+.ot-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;box-shadow:var(--sh)}
+.pill-grp{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:2px}
+.pill{padding:5px 12px;border:none;border-radius:6px;font-size:11px;font-weight:600;color:var(--text2);background:transparent;cursor:pointer;transition:all .15s}
+.pill.active{background:var(--blue);color:#fff;box-shadow:0 1px 4px rgba(29,78,216,.3)}
+.bar-sep{width:1px;height:22px;background:var(--border)}
+.bar-lbl{font-size:11px;font-weight:600;color:var(--text3)}
+
+/* MULTI-SELECT */
+.ms-wrap{position:relative;display:inline-block}
+.ms-btn{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:5px 10px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;transition:all .2s;user-select:none}
+.ms-btn:hover,.ms-btn.open{border-color:var(--blue);background:#fff}
+.ms-btn-lbl{flex:1;text-align:left}
+.ms-caret{font-size:9px;color:var(--text3);transition:transform .2s}
+.ms-btn.open .ms-caret{transform:rotate(180deg)}
+.ms-menu{position:absolute;top:calc(100% + 5px);left:0;min-width:190px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:600;overflow:hidden;animation:msIn .15s ease}
+@keyframes msIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.ms-bar{display:flex;gap:6px;padding:7px 10px;border-bottom:1px solid var(--border2)}
+.ms-bar-btn{flex:1;background:transparent;border:1.5px solid var(--border);border-radius:6px;padding:4px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;font-family:inherit}
+.ms-bar-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue4)}
+.ms-list{max-height:220px;overflow-y:auto}
+.ms-item{display:flex;align-items:center;gap:9px;padding:7px 12px;cursor:pointer;transition:background .1s}
+.ms-item:hover{background:var(--surface2)}
+.ms-chk{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff}
+.ms-chk.on{background:var(--blue);border-color:var(--blue)}
+.ms-chk.on::after{content:'✓';font-size:9px;color:#fff;font-weight:700}
+.ms-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ms-item-lbl{font-size:12px;color:var(--text);font-weight:500}
+.ms-item-cnt{font-size:10px;color:var(--text3);margin-left:auto}
+.ms-empty{padding:14px;text-align:center;font-size:11px;color:var(--text3)}
+
+/* RANKS */
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.rank-row:last-child{border-bottom:none}
+.rn{width:22px;text-align:center;font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0}
+.rn-1{color:#f59e0b}.rn-2{color:#94a3b8}.rn-3{color:#b45309}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.rank-bar-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.rank-bar{flex:1;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.rank-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+.rank-val{font-size:11px;font-weight:700;color:var(--text);flex-shrink:0;min-width:52px;text-align:right}
+
+/* OT MATRIX */
+.mx-scroll{overflow:auto;max-height:440px}
+.mx-tbl{border-collapse:separate;border-spacing:0;font-size:11px;min-width:100%}
+.mx-tbl th{padding:8px 10px;background:var(--blue);color:rgba(255,255,255,.9);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0;z-index:3}
+.mx-tbl th.sl{position:sticky;z-index:4}
+.mx-tbl td{padding:6px 10px;border-bottom:1px solid var(--border2);white-space:nowrap}
+.mx-tbl td.sl{position:sticky;background:var(--white);z-index:2;border-right:1px solid var(--border2)}
+.mx-tbl tr:hover td{background:var(--blue4)}
+
+/* MTD ATTENDANCE */
+.mtd-scroll{overflow:auto;max-height:500px}
+.mtd-tbl{border-collapse:separate;border-spacing:0;font-size:11px;min-width:100%}
+.mtd-tbl th{padding:7px 8px;background:var(--blue);color:rgba(255,255,255,.9);font-size:10px;font-weight:600;text-transform:uppercase;white-space:nowrap;position:sticky;top:0;z-index:3}
+.mtd-tbl th.col-pa{position:sticky;left:0;z-index:5;min-width:150px;background:var(--blue2)}
+.mtd-tbl th.col-tl{position:sticky;left:150px;z-index:5;min-width:66px;background:var(--blue2)}
+.mtd-tbl td{padding:5px 8px;border-bottom:1px solid var(--border2)}
+.mtd-tbl td.col-pa{position:sticky;left:0;z-index:2;background:var(--white);border-right:1px solid var(--border2)}
+.mtd-tbl td.col-tl{position:sticky;left:150px;z-index:2;background:var(--white);border-right:1px solid var(--border2)}
+.mtd-tbl tr:hover td{background:var(--blue4)}
+.mtd-tbl tr:hover td.col-pa,.mtd-tbl tr:hover td.col-tl{background:#dbeafe}
+.pa-nm{font-size:12px;font-weight:700;color:var(--text)}
+.pa-st{font-size:10px;color:var(--text3)}
+.day-in{background:rgba(5,150,105,.06)}
+.day-short{background:rgba(217,119,6,.06)}
+.day-leave{background:rgba(29,78,216,.06)}
+.day-dayoff{background:rgba(16,185,129,.06)}
+.day-ph{background:rgba(124,58,237,.06)}
+.day-today{background:rgba(29,78,216,.08)!important}
+.score-hi{color:var(--green);font-weight:800}
+.score-mid{color:var(--amber);font-weight:800}
+.score-lo{color:var(--red);font-weight:800}
+
+/* INCENTIVE */
+.inc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.inc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.inc-hdr{padding:11px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px}
+.inc-av{width:30px;height:30px;border-radius:8px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.inc-tl-name{font-size:12px;font-weight:700;color:var(--text)}
+.inc-row{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--border2)}
+.inc-row:last-child{border-bottom:none}
+.inc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.inc-pa{font-size:11px;color:var(--text2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inc-st{font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px;flex-shrink:0}
+.inc-g{background:var(--green2);color:var(--green)}
+.inc-a{background:var(--amber2);color:var(--amber)}
+.inc-r{background:var(--red2);color:var(--red)}
+.inc-gr{background:var(--surface2);color:var(--text3)}
+
+/* INSIGHTS */
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ins-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.ins-hdr{padding:11px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px}
+.ins-icon{font-size:14px}
+.ins-title{font-size:12px;font-weight:700;color:var(--text);flex:1}
+.ins-sub2{font-size:10px;color:var(--text3)}
+.ins-row2{display:flex;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid var(--border2);transition:background .1s}
+.ins-row2:last-child{border-bottom:none}
+.ins-row2:hover{background:var(--surface2)}
+.ins-av2{width:28px;height:28px;border-radius:7px;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ins-info2{flex:1;min-width:0}
+.ins-name2{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ins-sub3{font-size:10px;color:var(--text3)}
+.ins-val2{font-size:13px;font-weight:800;color:var(--text)}
+.rec2{padding:11px 14px;border-bottom:1px solid var(--border2)}
+.rec2:last-child{border-bottom:none}
+.rec2-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.rec2-body{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:3px}
+.rec2-action{font-size:10px;font-weight:600;color:var(--blue)}
+.rec2.ok .rec2-title{color:var(--green)}
+.rec2.warn .rec2-title{color:var(--amber)}
+.rec2.danger .rec2-title{color:var(--red)}
+.no-ins{padding:16px;text-align:center;font-size:12px;color:var(--text3)}
+
+/* LIGHTBOX */
+#lb{display:none;position:fixed;inset:0;background:rgba(15,23,42,.65);z-index:9000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+#lb.open{display:flex}
+.lb-box{background:var(--white);border-radius:var(--r2);overflow:hidden;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+#lbPh{width:100%;max-height:280px;object-fit:cover;display:block;background:var(--surface2)}
+.lb-info{padding:14px 16px}
+#lbNm{font-size:14px;font-weight:800;color:var(--text);margin-bottom:10px}
+.lb-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.lb-item{background:var(--surface2);border-radius:var(--r);padding:7px 9px}
+.lb-lbl2{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.lb-val2{font-size:12px;font-weight:600;color:var(--text)}
+.lb-btns{display:flex;gap:8px}
+.lb-btn2{flex:1;padding:8px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid}
+.lb-close{background:var(--surface2);border-color:var(--border);color:var(--text2)}
+.lb-close:hover{border-color:var(--red);color:var(--red)}
+.lb-map{background:var(--blue4);border-color:rgba(29,78,216,.2);color:var(--blue)}
+.lb-map:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.lb-drv{background:var(--green2);border-color:rgba(5,150,105,.2);color:var(--green)}
+.lb-drv:hover{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* MISC */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.no-data{padding:24px;text-align:center;color:var(--text3);font-size:12px}
+.search-inp{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:5px 11px;font-size:12px;color:var(--text);outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--blue);background:#fff}
 </style>
 </head>
 <body>
@@ -393,7 +328,7 @@ button,input,select{font-family:inherit}
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-hdr">
+    <div class="login-logo">
       <div class="login-icon">📍</div>
       <div class="login-title">PA Check-In Dashboard</div>
       <div class="login-sub">Abbott HCL · Real-Time Field View</div>
@@ -407,13 +342,11 @@ button,input,select{font-family:inherit}
       </div>
     </div>
     <button class="login-btn" id="btnLogin" type="button">Sign In →</button>
-    <div class="login-foot">Abbott HCL · Secure Access</div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="tb-brand">
@@ -423,26 +356,25 @@ button,input,select{font-family:inherit}
         <div class="tb-sub">Abbott HCL · Real-Time Field View</div>
       </div>
     </div>
-    <div class="tb-div"></div>
     <div class="tb-right">
       <div class="live-badge"><div class="live-dot"></div>LIVE</div>
-      <div class="tb-clock" id="tbClock">—</div>
-      <button class="btn-logout" id="btnLogout">Sign Out</button>
+      <span class="topbar-clock" id="hclk" id2="tbClock">—</span>
+      <button class="btn-signout" id="btnLogout" onclick="if(confirm('Sign out?'))location.reload()">Sign Out</button>
     </div>
   </div>
 
   <!-- FILTER BAR -->
   <div class="filterbar">
-    <span class="fl">DATE</span>
+    <span class="fl">Date</span>
     <input type="date" id="datePick" class="fi"/>
     <div class="fsep"></div>
-    <span class="fl">TEAM LEADER</span>
+    <span class="fl">Team Leader</span>
     <select id="tlPick" class="fi">
       <option value="all">All Team Leaders</option>
       <option>Chhay Setha</option><option>Chin Pholly</option>
       <option>Lon Sreypom</option><option>Mao Soklim</option><option>Sean Chamroeun</option>
     </select>
-    <span class="pa-count" id="paBadge">— PAs</span>
+    <span class="pa-badge" id="paBadge">— PAs</span>
     <div class="fsep"></div>
     <button class="btn-refresh" id="btnRefresh">↻ Refresh</button>
   </div>
@@ -452,11 +384,11 @@ button,input,select{font-family:inherit}
 
   <!-- TABS -->
   <div class="tabs">
-    <div class="tab active" id="tab-overview"  onclick="switchTab('overview')">📊 Overview</div>
-    <div class="tab"        id="tab-tl"         onclick="switchTab('tl')">👥 TL Performance</div>
-    <div class="tab"        id="tab-insights"   onclick="switchTab('insights')">💡 Insights</div>
-    <div class="tab"        id="tab-incentive"  onclick="switchTab('incentive')">🏆 Incentive</div>
-    <div class="tab"        id="tab-offtake"    onclick="switchTab('offtake')">📦 Off-Take Analysis</div>
+    <div class="tab active" id="tab-overview"   onclick="switchTab('overview')">📊 Overview</div>
+    <div class="tab"        id="tab-tl"          onclick="switchTab('tl')">👥 TL Performance</div>
+    <div class="tab"        id="tab-insights"    onclick="switchTab('insights')">💡 Insights</div>
+    <div class="tab"        id="tab-incentive"   onclick="switchTab('incentive')">🏆 Incentive</div>
+    <div class="tab"        id="tab-offtake"     onclick="switchTab('offtake')">📦 Off-Take</div>
   </div>
 
   <!-- PANELS -->
@@ -468,36 +400,38 @@ button,input,select{font-family:inherit}
         <div class="stat-card sc-blue">
           <div class="stat-lbl">Total PAs</div>
           <div class="stat-val" id="sTotalPA">—</div>
-          <div class="stat-sub">Active field staff</div>
-          <div class="stat-bar"><div class="stat-fill" id="sBarTotal" style="background:linear-gradient(90deg,var(--blue),var(--purple));width:100%"></div></div>
+          <div class="stat-sub" id="stTotal">Active field staff</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="sBarTotal" style="background:linear-gradient(90deg,#1d4ed8,#7c3aed);width:100%"></div></div>
         </div>
         <div class="stat-card sc-green">
           <div class="stat-lbl">Checked In</div>
           <div class="stat-val" id="sCheckedIn">—</div>
-          <div class="stat-sub" id="sCheckedInSub">At their stores</div>
-          <div class="stat-bar"><div class="stat-fill" id="sBarIn" style="background:linear-gradient(90deg,var(--green),#10b981)"></div></div>
+          <div class="stat-sub" id="stIn">At their stores</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="sBarIn" style="background:linear-gradient(90deg,#059669,#10b981)"></div></div>
         </div>
         <div class="stat-card sc-red">
           <div class="stat-lbl">Checked Out</div>
           <div class="stat-val" id="sCheckedOut">—</div>
-          <div class="stat-sub" id="sCheckedOutSub">Completed visits</div>
-          <div class="stat-bar"><div class="stat-fill" id="sBarOut" style="background:linear-gradient(90deg,var(--red),#f97316)"></div></div>
+          <div class="stat-sub" id="stOut">Completed visits</div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="sBarOut" style="background:linear-gradient(90deg,#dc2626,#f97316)"></div></div>
         </div>
         <div class="stat-card sc-amber">
           <div class="stat-lbl">Coverage</div>
           <div class="stat-val" id="sCoverage">—%</div>
-          <div class="stat-sub">Check-in rate today</div>
-          <div class="stat-bar"><div class="stat-fill" id="sBarCov" style="background:linear-gradient(90deg,var(--amber),#fbbf24)"></div></div>
+          <div class="stat-sub"><span id="stPend"></span> <span id="stPct"></span></div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="sBarCov" id2="progF" style="background:linear-gradient(90deg,#d97706,#fbbf24)"></div></div>
         </div>
       </div>
+      <!-- coverage bar compat -->
+      <div style="display:none"><span id="progF"></span><span id="stCov"></span></div>
 
-      <!-- PA Photos -->
+      <!-- PHOTO GRID -->
       <div class="card">
         <div class="card-hdr">
           <div class="card-title">📸 PA Field Activity</div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <input type="text" id="photoSearch" class="fi" placeholder="Search PA…" style="width:150px" oninput="renderPhotos()"/>
-            <span class="card-sub" id="phSub" id2="photoCount"></span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input type="text" id="srchInput" class="search-inp" placeholder="Search PA…" style="width:150px" oninput="renderPhotos()"/>
+            <span class="card-sub" id="phSub"></span>
           </div>
         </div>
         <div class="card-body">
@@ -505,52 +439,64 @@ button,input,select{font-family:inherit}
         </div>
       </div>
 
-      <!-- Chart + Table -->
+      <!-- CHART + TABLE -->
       <div class="g2">
-        <div class="card" style="margin-bottom:0">
-          <div class="card-hdr"><div class="card-title">📈 Activity Chart</div></div>
-          <div class="card-body"><canvas id="actChart" height="190"></canvas></div>
-        </div>
-        <div class="card" style="margin-bottom:0">
+        <div class="card">
           <div class="card-hdr">
-            <div class="card-title">📋 All Records <span id="recCount" style="font-weight:400;font-size:11px;color:#94a3b8"></span></div>
-            <input type="text" id="tblSearch" id2="srchInput" class="fi" placeholder="Search…" style="width:130px" oninput="renderTable()"/>
+            <div class="card-title">📈 Activity Chart</div>
+            <span class="card-sub" id="actSub"></span>
           </div>
-          <div class="tbl-wrap" style="max-height:265px">
-            <table class="tbl"><thead><tr>
-              <th>PA Name</th><th>Store</th><th>Type</th><th>Time</th><th>GPS</th>
-            </tr></thead>
-            <tbody id="tblBody"></tbody></table>
+          <div class="card-body" style="padding:10px 14px">
+            <canvas id="actChart" height="185"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">📋 All Records <span id="recCount" style="font-size:11px;font-weight:400;color:var(--text3)"></span></div>
+            <input type="text" id="tblSearch" class="search-inp" placeholder="Search…" style="width:130px" oninput="renderTable()"/>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl" id="tblBody">
+              <thead><tr>
+                <th></th><th>PA Name</th><th>Store</th><th>Type</th><th>Time</th><th>GPS</th><th>Duration</th><th></th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- MTD Attendance Matrix -->
-      <div class="card" style="margin-top:16px">
-        <div class="card-hdr">
+      <!-- MTD ATTENDANCE -->
+      <div class="card">
+        <div class="card-hdr" style="flex-wrap:wrap;gap:8px">
           <div class="card-title">📅 MTD Attendance &amp; Discipline Matrix</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span class="card-sub" id="attSubTitle"></span>
-            <input type="month" id="attMonthPick" class="fi" style="font-size:12px;padding:4px 8px"/>
+            <span class="card-sub" id="attSub"></span>
+            <input type="month" id="attMonth" class="fi" style="font-size:12px;padding:4px 8px"/>
+            <input type="month" id="attMonthPick" class="fi" style="font-size:12px;padding:4px 8px;display:none"/>
+            <input type="date"  id="attStartDate" class="fi" style="font-size:12px;padding:4px 8px;display:none"/>
             <div class="pill-grp">
               <button class="pill active" id="attViewAtt"  onclick="setAttView(this)">Attendance</button>
               <button class="pill"        id="attViewOT"   onclick="setAttView(this)">Off-Take</button>
               <button class="pill"        id="attViewGPS"  onclick="setAttView(this)">GPS</button>
               <button class="pill"        id="attViewBoth" onclick="setAttView(this)">All</button>
             </div>
-            <input type="text" id="attSearch" class="fi" placeholder="Search PA…" style="width:140px" oninput="renderAttendance()"/>
+            <input type="text" id="attSearch" class="search-inp" placeholder="Search PA…" style="width:140px" oninput="renderAttendance()"/>
           </div>
         </div>
         <div class="mtd-scroll">
-          <table class="mtd-tbl" id="attTable"><tr><td class="no-data">Loading…</td></tr></table>
+          <table class="mtd-tbl">
+            <thead id="attMatrixHead"></thead>
+            <tbody id="attMatrixBody"><tr><td colspan="20" class="no-data">Loading…</td></tr></tbody>
+          </table>
         </div>
+        <div id="attLeaderboard" style="padding:12px 16px;border-top:1px solid var(--border2)"></div>
       </div>
     </div>
 
     <!-- ══ TL PERFORMANCE ══ -->
     <div class="panel" id="panel-tl">
-      <!-- TL Summary Stats -->
-      <div class="stats-row" style="margin-bottom:16px">
+      <div class="stats-row">
         <div class="stat-card sc-blue">
           <div class="stat-lbl">Total PAs</div>
           <div class="stat-val" id="tlTotalPA">—</div>
@@ -584,7 +530,7 @@ button,input,select{font-family:inherit}
           <div class="stat-sub">&gt;100m from store</div>
         </div>
         <div class="stat-card sc-green">
-          <div class="stat-lbl">On-Time Check-In</div>
+          <div class="stat-lbl">On-Time</div>
           <div class="stat-val" id="insOnTime">—</div>
           <div class="stat-sub">Before 9:00 AM</div>
         </div>
@@ -601,15 +547,15 @@ button,input,select{font-family:inherit}
       </div>
       <div class="g2">
         <div class="card">
-          <div class="card-hdr"><div class="card-title">📍 GPS Violations</div><span class="card-sub" id="gpsViolSub"></span></div>
-          <div id="gpsViolBody"><div class="no-data">Loading…</div></div>
-        </div>
-        <div class="card">
           <div class="card-hdr"><div class="card-title">✅ Live Check-Ins</div><span class="card-sub" id="liveInSub"></span></div>
           <div id="liveInBody"><div class="no-data">Loading…</div></div>
         </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📍 GPS Violations</div></div>
+          <div id="gpsViolBody"><div class="no-data">Loading…</div></div>
+        </div>
       </div>
-      <div class="g2" style="margin-top:14px">
+      <div class="g2">
         <div class="card">
           <div class="card-hdr"><div class="card-title">⚠️ Alerts</div><span class="card-sub" id="alertSub"></span></div>
           <div id="alertBody"><div class="no-data">Loading…</div></div>
@@ -619,7 +565,7 @@ button,input,select{font-family:inherit}
           <div id="topPABody"><div class="no-data">Loading…</div></div>
         </div>
       </div>
-      <div class="g2" style="margin-top:14px">
+      <div class="g2">
         <div class="card">
           <div class="card-hdr"><div class="card-title">⏰ Long Visits</div></div>
           <div id="longVisitBody"><div class="no-data">Loading…</div></div>
@@ -629,56 +575,62 @@ button,input,select{font-family:inherit}
           <div id="pendingTLBody"><div class="no-data">Loading…</div></div>
         </div>
       </div>
-      <div class="card" style="margin-top:14px">
+      <div class="card">
         <div class="card-hdr"><div class="card-title">💡 TL Leaderboard</div></div>
         <div id="tlLbBody"><div class="no-data">Loading…</div></div>
       </div>
-      <div class="card" style="margin-top:14px">
+      <div class="card">
         <div class="card-hdr"><div class="card-title">🤖 AI Recommendations</div></div>
         <div id="recsBody"><div class="no-data">Loading…</div></div>
       </div>
     </div>
 
+    <!-- ══ INCENTIVE ══ -->
     <div class="panel" id="panel-incentive">
-      <div style="display:none"><span id="incGreen"></span><span id="incYellow"></span><span id="incRed"></span><span id="incGrey"></span><span id="incDateInfo"></span></div>
+      <div style="display:none">
+        <span id="incGreen"></span><span id="incYellow"></span>
+        <span id="incRed"></span><span id="incGrey"></span>
+        <span id="incDateInfo"></span>
+      </div>
       <div class="inc-grid" id="incGrid"><div class="no-data">Loading…</div></div>
     </div>
 
     <!-- ══ OFF-TAKE ══ -->
     <div class="panel" id="panel-offtake">
+      <div id="storeBody" style="display:none"></div>
 
       <!-- TOOLBAR -->
       <div class="ot-bar">
         <span class="bar-lbl">VIEW</span>
         <div class="pill-grp">
-          <button class="pill active" id="ot-single">📅 Day</button>
-          <button class="pill"        id="ot-range">📆 Range</button>
-          <button class="pill"        id="ot-month">📊 Month</button>
+          <button class="pill active" id="ot-single" onclick="setOTMode('single');fetchAndRenderOT()">📅 Day</button>
+          <button class="pill"        id="ot-range"  onclick="setOTMode('range');fetchAndRenderOT()">📆 Range</button>
+          <button class="pill"        id="ot-month"  onclick="setOTMode('month');fetchAndRenderOT()">📊 Month</button>
         </div>
         <div class="bar-sep"></div>
         <div id="ot-ctrl-day" style="display:flex;align-items:center;gap:6px">
           <span class="bar-lbl">Date</span>
-          <input type="date" id="otFrom" class="fi" style="font-size:11px;padding:4px 8px"/>
+          <input type="date" id="otFrom" class="fi" style="font-size:12px;padding:4px 8px" onchange="fetchAndRenderOT()"/>
         </div>
         <div id="ot-ctrl-range" style="display:none;align-items:center;gap:6px">
           <span class="bar-lbl">From</span>
-          <input type="date" id="otFrom2" class="fi" style="font-size:11px;padding:4px 8px"/>
+          <input type="date" id="otFrom2" class="fi" style="font-size:12px;padding:4px 8px" onchange="fetchAndRenderOT()"/>
           <span class="bar-lbl">To</span>
-          <input type="date" id="otTo" class="fi" style="font-size:11px;padding:4px 8px"/>
+          <input type="date" id="otTo" class="fi" style="font-size:12px;padding:4px 8px" onchange="fetchAndRenderOT()"/>
         </div>
         <div id="ot-ctrl-month" style="display:none;align-items:center;gap:6px">
           <span class="bar-lbl">Month</span>
-          <input type="month" id="otMonthPick" class="fi" style="font-size:11px;padding:4px 8px"/>
+          <input type="month" id="otMonthPick" class="fi" style="font-size:12px;padding:4px 8px" onchange="fetchAndRenderOT()"/>
         </div>
         <div class="bar-sep"></div>
         <span class="bar-lbl">TL</span>
-        <select id="otTLFilter" class="fi" style="font-size:11px;padding:4px 8px">
+        <select id="otTLFilter" class="fi" style="font-size:12px;padding:4px 8px" onchange="fetchAndRenderOT()">
           <option value="all">All TLs</option>
           <option>Chhay Setha</option><option>Chin Pholly</option>
           <option>Lon Sreypom</option><option>Mao Soklim</option><option>Sean Chamroeun</option>
         </select>
         <div class="bar-sep"></div>
-        <!-- Brand Multi-Select -->
+        <!-- Brand -->
         <div class="ms-wrap" id="brandWrap">
           <div class="ms-btn" id="brandBtn" onclick="toggleMS('brand')">
             <span class="ms-btn-lbl" id="brandLabel">🏷️ All Brands</span>
@@ -686,13 +638,13 @@ button,input,select{font-family:inherit}
           </div>
           <div class="ms-menu" id="brandMenu" style="display:none">
             <div class="ms-bar">
-              <button class="ms-bar-btn a" onclick="msAll('brand')">Select All</button>
-              <button class="ms-bar-btn c" onclick="msClear('brand')">Clear All</button>
+              <button class="ms-bar-btn" onclick="msAll('brand')">Select All</button>
+              <button class="ms-bar-btn" onclick="msClear('brand')">Clear</button>
             </div>
             <div class="ms-list" id="brandList"></div>
           </div>
         </div>
-        <!-- MND Multi-Select -->
+        <!-- Category (MND/PND) -->
         <div class="ms-wrap" id="mndWrap">
           <div class="ms-btn" id="mndMsBtn" onclick="toggleMS('mnd')">
             <span class="ms-btn-lbl" id="mndMsLabel">📂 Category: All</span>
@@ -700,13 +652,13 @@ button,input,select{font-family:inherit}
           </div>
           <div class="ms-menu" id="mndMsMenu" style="display:none">
             <div class="ms-bar">
-              <button class="ms-bar-btn a" onclick="setMNDPNDall('mnd')">Select All</button>
-              <button class="ms-bar-btn c" onclick="setMNDPNDnone('mnd')">Clear</button>
+              <button class="ms-bar-btn" onclick="setMNDPNDall('mnd')">Select All</button>
+              <button class="ms-bar-btn" onclick="setMNDPNDnone('mnd')">Clear</button>
             </div>
-            <div class="ms-list" id="mndMsList"><div class="ms-empty">Loading from sheet…</div></div>
+            <div class="ms-list" id="mndMsList"><div class="ms-empty">Load from sheet…</div></div>
           </div>
         </div>
-        <!-- PND Multi-Select -->
+        <!-- Group (PWD/RPB) -->
         <div class="ms-wrap" id="pndWrap">
           <div class="ms-btn" id="pndMsBtn" onclick="toggleMS('pnd')">
             <span class="ms-btn-lbl" id="pndMsLabel">📦 Group: All</span>
@@ -714,13 +666,13 @@ button,input,select{font-family:inherit}
           </div>
           <div class="ms-menu" id="pndMsMenu" style="display:none">
             <div class="ms-bar">
-              <button class="ms-bar-btn a" onclick="setMNDPNDall('pnd')">Select All</button>
-              <button class="ms-bar-btn c" onclick="setMNDPNDnone('pnd')">Clear</button>
+              <button class="ms-bar-btn" onclick="setMNDPNDall('pnd')">Select All</button>
+              <button class="ms-bar-btn" onclick="setMNDPNDnone('pnd')">Clear</button>
             </div>
-            <div class="ms-list" id="pndMsList"><div class="ms-empty">Loading from sheet…</div></div>
+            <div class="ms-list" id="pndMsList"><div class="ms-empty">Load from sheet…</div></div>
           </div>
         </div>
-        <!-- Month Multi-Select -->
+        <!-- Months (shown in month/range mode) -->
         <div class="ms-wrap" id="monthWrap" style="display:none">
           <div class="ms-btn" id="monthBtn" onclick="toggleMS('month')">
             <span class="ms-btn-lbl" id="monthLabel">📅 All Months</span>
@@ -728,8 +680,8 @@ button,input,select{font-family:inherit}
           </div>
           <div class="ms-menu" id="monthMenu" style="display:none">
             <div class="ms-bar">
-              <button class="ms-bar-btn a" onclick="msAll('month')">Select All</button>
-              <button class="ms-bar-btn c" onclick="msClear('month')">Clear All</button>
+              <button class="ms-bar-btn" onclick="msAll('month')">Select All</button>
+              <button class="ms-bar-btn" onclick="msClear('month')">Clear</button>
             </div>
             <div class="ms-list" id="monthList"></div>
           </div>
@@ -737,7 +689,6 @@ button,input,select{font-family:inherit}
       </div>
 
       <!-- OT STATS -->
-      <div id="storeBody" style="display:none"></div>
       <div class="stats-row">
         <div class="stat-card sc-blue">
           <div class="stat-lbl">Total Units</div>
@@ -763,72 +714,88 @@ button,input,select{font-family:inherit}
 
       <!-- OT CHARTS -->
       <div class="g2">
-        <div class="card" style="margin-bottom:0">
+        <div class="card">
           <div class="card-hdr">
             <div class="card-title">📈 Off-Take Over Time</div>
-            <div class="pill-grp" style="padding:1px">
-              <button class="pill active" id="otChartUnit"  onclick="setOTChartMode('unit')"  style="font-size:10px;padding:3px 9px">Units</button>
-              <button class="pill"        id="otChartValue" onclick="setOTChartMode('value')" style="font-size:10px;padding:3px 9px">Value</button>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span class="card-sub" id="otChSub"></span>
+              <button class="pill active" id="otChUnit"  onclick="setOTChartMode('unit')"  style="font-size:10px;padding:3px 9px">Units</button>
+              <button class="pill"        id="otChValue" onclick="setOTChartMode('value')" style="font-size:10px;padding:3px 9px">Value</button>
             </div>
-            <span class="card-sub" id="otChSub"></span>
           </div>
-          <div class="card-body"><canvas id="otChart" height="185"></canvas></div>
+          <div class="card-body" style="padding:10px 14px"><canvas id="otChart" height="185"></canvas></div>
         </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="card-hdr"><div class="card-title">🏢 By Team Leader</div><span class="card-sub" id="otTLChSub"></span></div>
-          <div class="card-body"><canvas id="otTLChart" height="185"></canvas></div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">🏢 By Team Leader</div>
+            <span class="card-sub" id="otTLChSub"></span>
+          </div>
+          <div class="card-body" style="padding:10px 14px"><canvas id="otTLChart" height="185"></canvas></div>
         </div>
       </div>
 
-      <div class="g2" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
-          <div class="card-hdr"><div class="card-title">🔝 Top Materials</div><span class="card-sub">Ranked by units</span></div>
+      <!-- RANKINGS -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔝 Top Materials</div><span class="card-sub">By units</span></div>
           <div class="card-body" id="skuBody"><div class="no-data">No data</div></div>
         </div>
-        <div class="card" style="margin-bottom:0">
-          <div class="card-hdr"><div class="card-title">👤 PA Performance</div><span class="card-sub">Units per PA · Store</span></div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">👤 PA Performance</div><span class="card-sub">Units · Store</span></div>
           <div class="card-body" id="paBody"><div class="no-data">No data</div></div>
         </div>
       </div>
 
-      <div class="g2" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
+      <!-- BRAND + PA TREND -->
+      <div class="g2">
+        <div class="card">
           <div class="card-hdr"><div class="card-title">🏷️ By Brand</div></div>
           <div class="card-body" id="catBody"><div class="no-data">No data</div></div>
         </div>
-        <div class="card" style="margin-bottom:0">
+        <div class="card">
           <div class="card-hdr">
             <div class="card-title">📊 PA Trend</div>
-            <input type="text" id="paTrendSearch" class="fi" placeholder="Search PA…" style="width:130px;font-size:11px;padding:4px 8px"/>
+            <input type="text" id="paTrendSearch" class="search-inp" placeholder="Search PA…" style="width:130px;font-size:11px;padding:4px 8px"/>
           </div>
-          <div class="card-body"><canvas id="otPAChart" height="185"></canvas></div>
+          <div class="card-body" style="padding:10px 14px"><canvas id="otPAChart" height="185"></canvas></div>
+          <div style="display:none"><span id="otPAChSub"></span></div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
+      <!-- PA MATRIX -->
+      <div class="card">
         <div class="card-hdr">
           <div class="card-title">📋 PA Off-Take Matrix</div>
-          <div class="pill-grp" style="padding:1px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="card-sub" id="otMatrixSub"></span>
             <button class="pill active" id="otMxBoth"  onclick="setOTMatrixMode('both')"  style="font-size:10px;padding:3px 9px">All</button>
             <button class="pill"        id="otMxQty"   onclick="setOTMatrixMode('qty')"   style="font-size:10px;padding:3px 9px">Units</button>
             <button class="pill"        id="otMxValue" onclick="setOTMatrixMode('value')" style="font-size:10px;padding:3px 9px">Value</button>
           </div>
         </div>
-        <div class="mx-scroll"><table class="mx-tbl" id="otMatrix"></table></div>
+        <div class="mx-scroll">
+          <table class="mx-tbl">
+            <thead id="otMatrixHead"></thead>
+            <tbody id="otMatrixBody"><tr><td class="no-data">Loading…</td></tr></tbody>
+          </table>
+        </div>
       </div>
+      <!-- compat id -->
+      <div style="display:none" id="otMatrix"></div>
 
-      <div class="g2" style="margin-top:16px">
-        <div class="card" style="margin-bottom:0">
+      <!-- TL LEADERBOARD + NO-OT -->
+      <div class="g2">
+        <div class="card">
           <div class="card-hdr"><div class="card-title">🏆 TL Leaderboard</div><span class="card-sub" id="otTLSub"></span></div>
           <div id="otTLBody"><div class="no-data">No data</div></div>
         </div>
-        <div class="card" style="margin-bottom:0">
+        <div class="card">
           <div class="card-hdr"><div class="card-title">⚠️ No Off-Take PAs</div><span class="card-sub" id="noOTSub"></span></div>
           <div id="noOTBody"><div class="no-data">No data</div></div>
         </div>
       </div>
 
-    </div><!-- /offtake -->
+    </div><!-- /panel-offtake -->
 
   </div><!-- /panels -->
 </div><!-- /app -->
@@ -836,24 +803,39 @@ button,input,select{font-family:inherit}
 <!-- LIGHTBOX -->
 <div id="lb">
   <div class="lb-box">
-    <img class="lb-img" id="lbImg" src="" alt=""/>
+    <img id="lbPh" src="" alt=""/>
     <div class="lb-info">
-      <div class="lb-name" id="lbName">—</div>
+      <div id="lbNm">—</div>
       <div class="lb-grid">
-        <div class="lb-item"><div class="lb-lbl">Store</div><div class="lb-val" id="lbStore">—</div></div>
-        <div class="lb-item"><div class="lb-lbl">Status</div><div class="lb-val" id="lbStatus">—</div></div>
-        <div class="lb-item"><div class="lb-lbl">Time</div><div class="lb-val" id="lbTime">—</div></div>
-        <div class="lb-item"><div class="lb-lbl">GPS</div><div class="lb-val" id="lbGPS">—</div></div>
+        <div class="lb-item"><div class="lb-lbl2">Store</div><div class="lb-val2" id="lbStore">—</div></div>
+        <div class="lb-item"><div class="lb-lbl2">Status</div><div class="lb-val2" id="lbSts">—</div></div>
+        <div class="lb-item"><div class="lb-lbl2">Time</div><div class="lb-val2" id="lbTm">—</div></div>
+        <div class="lb-item"><div class="lb-lbl2">GPS</div><div class="lb-val2" id="lbLat">—</div></div>
+      </div>
+      <!-- compat IDs used by JS -->
+      <div style="display:none">
+        <span id="lbLng"></span><span id="lbMapBtn2"></span>
       </div>
       <div class="lb-btns">
-        <button class="lb-btn lb-close" onclick="document.getElementById('lb').classList.remove('open')">✕ Close</button>
-        <a class="lb-btn lb-map" id="lbMapBtn" href="#" target="_blank">📍 View on Map</a>
+        <button class="lb-btn2 lb-close" onclick="closeLB()">✕ Close</button>
+        <a class="lb-btn2 lb-map" id="lbMapBtn" href="#" target="_blank">📍 Map</a>
+        <a class="lb-btn2 lb-drv" id="lbDrvBtn" href="#" target="_blank">📂 Drive</a>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Hidden compat elements -->
+<div style="display:none">
+  <span id="storeCnt"></span><span id="tbClock" style="display:none"></span>
+  <span id="pinInput"></span><span id="pinErr"></span>
+  <span id="loginWrap"></span><span id="appWrap"></span>
+</div>
+
 <script>
+
+
+
 
 
 
@@ -1435,9 +1417,9 @@ function renderTable(){
   var q=((document.getElementById('tblSearch')||document.getElementById('srchInput')||{value:''}).value||'').toLowerCase();
   var rows=allData.filter(function(d){return(d.date||todayStr)===dpVal&&(tableFilter==='all'||d.status===tableFilter)&&(!q||d.pa.toLowerCase().includes(q)||d.store.toLowerCase().includes(q));});
   var rc=document.getElementById('recCount');if(rc)rc.textContent=rows.length+' records';
-  if(!rows.length){document.getElementById('tblBody').innerHTML='<tr class="emptyrow"><td colspan="9">No records found</td></tr>';return;}
+  if(!rows.length){var _tb=document.getElementById('tblBody');if(_tb&&_tb.tagName==='TABLE'){_tb=_tb.querySelector('tbody');}if(_tb)_tb.innerHTML='<tr class="emptyrow"><td colspan="9">No records found</td></tr>';return;}
   var inMapT={};allData.filter(function(d2){return(d2.date||todayStr)===dpVal;}).forEach(function(d2){var k=d2.pa.toLowerCase()+'|'+(d2.store||'').toLowerCase();if(d2.status==='in'&&!inMapT[k])inMapT[k]=d2.time;});
-  document.getElementById('tblBody').innerHTML=rows.map(function(d){
+  var _tb=document.getElementById('tblBody');if(_tb&&_tb.tagName==='TABLE'){_tb=_tb.querySelector('tbody');}if(_tb)_tb.innerHTML=rows.map(function(d){
     var tu=thu(d.photo);
     var mu=d.mapsUrl||(d.lat&&d.lng?'https://www.google.com/maps?q='+d.lat+','+d.lng:'');
     var gpsBadge='—';
@@ -2456,6 +2438,7 @@ function setAttView(btn){
   btn.classList.add('active');
   renderAttendance();
 }
+
 
 </script>
 </body>
