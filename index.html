@@ -357,6 +357,35 @@ button,input,select{font-family:inherit}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .no-data{padding:32px;text-align:center;color:var(--text3);font-size:12px}
 .empty-icon{font-size:24px;margin-bottom:8px;opacity:.4}
+
+/* ── TL PERFORMANCE MISSING CSS ── */
+.tl-stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.tl-stat{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.tl-stat.in{background:#ecfdf5;color:#059669}
+.tl-stat.out{background:#fef2f2;color:#dc2626}
+.tl-stat.pend{background:#f8fafc;color:#94a3b8}
+.tl-stat.leave{background:#eff6ff;color:#1d4ed8}
+.tl-stat.cov{background:#eff6ff;color:#1d4ed8}
+.tl-prog{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin:8px 16px 0}
+.tl-progf{height:100%;border-radius:99px;transition:width .5s ease}
+.pa-list{max-height:320px;overflow-y:auto}
+.pa-item{display:flex;align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid var(--border2);transition:background .1s}
+.pa-item:last-child{border-bottom:none}
+.pa-item:hover{background:var(--surface2)}
+.pa-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pa-dot.in{background:#059669}
+.pa-dot.out{background:#dc2626}
+.pa-dot.pend{background:#cbd5e1}
+.pa-dot.leave{background:#1d4ed8}
+.pa-iname{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-istore{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pa-itime{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;margin:0 6px}
+.pa-ibadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap}
+.pa-ibadge.in{background:#ecfdf5;color:#059669}
+.pa-ibadge.out{background:#fef2f2;color:#dc2626}
+.pa-ibadge.pend{background:#f8fafc;color:#94a3b8;border:1px solid var(--border)}
+.pa-ibadge.leave{background:#eff6ff;color:#1d4ed8}
+
 </style>
 </head>
 <body>
@@ -520,6 +549,29 @@ button,input,select{font-family:inherit}
 
     <!-- ══ TL PERFORMANCE ══ -->
     <div class="panel" id="panel-tl">
+      <!-- TL Summary Stats -->
+      <div class="stats-row" style="margin-bottom:16px">
+        <div class="stat-card sc-blue">
+          <div class="stat-lbl">Total PAs</div>
+          <div class="stat-val" id="tlTotalPA">—</div>
+          <div class="stat-sub">Active field staff</div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="stat-lbl">Checked In</div>
+          <div class="stat-val" id="tlCheckedIn">—</div>
+          <div class="stat-sub">At their stores</div>
+        </div>
+        <div class="stat-card sc-red">
+          <div class="stat-lbl">Checked Out</div>
+          <div class="stat-val" id="tlCheckedOut">—</div>
+          <div class="stat-sub">Completed visits</div>
+        </div>
+        <div class="stat-card sc-amber">
+          <div class="stat-lbl">Pending</div>
+          <div class="stat-val" id="tlPending">—</div>
+          <div class="stat-sub">Not yet checked in</div>
+        </div>
+      </div>
       <div class="tl-grid" id="tlGrid"><div class="no-data">Loading…</div></div>
     </div>
 
