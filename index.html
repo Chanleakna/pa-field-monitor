@@ -490,7 +490,7 @@ button,input,select{font-family:inherit}
     <div class="tab active" id="tab-overview"   onclick="switchTab('overview')">📊 Overview</div>
     <div class="tab"        id="tab-tl"          onclick="switchTab('tl')">👥 TL Performance</div>
     <div class="tab"        id="tab-insights"    onclick="switchTab('insights')">💡 Insights</div>
-    <div class="tab"        id="tab-incentive"   onclick="switchTab('incentive')">🏆 Incentive</div>
+    
     <div class="tab"        id="tab-offtake"     onclick="switchTab('offtake')">📦 Off-Take</div>
   </div>
 
@@ -689,7 +689,7 @@ button,input,select{font-family:inherit}
     </div>
 
     <!-- ══ INCENTIVE ══ -->
-    <div class="panel" id="panel-incentive">
+    <div class="panel" id="panel-incentive" style="display:none!important">
       <div style="display:none">
         <span id="incGreen"></span><span id="incYellow"></span>
         <span id="incRed"></span><span id="incGrey"></span>
@@ -1477,7 +1477,7 @@ function processData(rows){
 
 // ── TABS ──
 function switchTab(id){
-  ['overview','tl','insights','incentive','offtake'].forEach(function(t){document.getElementById('tab-'+t).classList.toggle('active',t===id);document.getElementById('panel-'+t).classList.toggle('active',t===id);});
+  ['overview','tl','insights','offtake'].forEach(function(t){document.getElementById('tab-'+t).classList.toggle('active',t===id);document.getElementById('panel-'+t).classList.toggle('active',t===id);});
   if(id==='tl')renderTL();
   if(id==='offtake'){
     setOTMode('month');
