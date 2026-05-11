@@ -578,7 +578,7 @@ button,input,select{font-family:inherit}
     <!-- ══ INSIGHTS ══ -->
     <div class="panel" id="panel-insights">
       <div class="stats-row">
-        <div class="stat-card sc-blue">
+        <div class="stat-card sc-red">
           <div class="stat-lbl">GPS Violations</div>
           <div class="stat-val" id="insGpsViol">—</div>
           <div class="stat-sub">&gt;100m from store</div>
@@ -593,18 +593,54 @@ button,input,select{font-family:inherit}
           <div class="stat-val" id="insPending">—</div>
           <div class="stat-sub">Not yet checked in</div>
         </div>
-        <div class="stat-card sc-red">
+        <div class="stat-card sc-blue">
           <div class="stat-lbl">Alerts</div>
           <div class="stat-val" id="insAlerts">—</div>
           <div class="stat-sub">Require attention</div>
         </div>
       </div>
-      <div class="ins-grid" id="insGrid"><div class="no-data">Loading…</div></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📍 GPS Violations</div><span class="card-sub" id="gpsViolSub"></span></div>
+          <div id="gpsViolBody"><div class="no-data">Loading…</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">✅ Live Check-Ins</div><span class="card-sub" id="liveInSub"></span></div>
+          <div id="liveInBody"><div class="no-data">Loading…</div></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-top:14px">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">⚠️ Alerts</div><span class="card-sub" id="alertSub"></span></div>
+          <div id="alertBody"><div class="no-data">Loading…</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🏆 Top PA Off-Take</div></div>
+          <div id="topPABody"><div class="no-data">Loading…</div></div>
+        </div>
+      </div>
+      <div class="g2" style="margin-top:14px">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">⏰ Long Visits</div></div>
+          <div id="longVisitBody"><div class="no-data">Loading…</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">⏳ Pending by TL</div></div>
+          <div id="pendingTLBody"><div class="no-data">Loading…</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><div class="card-title">💡 TL Leaderboard</div></div>
+        <div id="tlLbBody"><div class="no-data">Loading…</div></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-hdr"><div class="card-title">🤖 AI Recommendations</div></div>
+        <div id="recsBody"><div class="no-data">Loading…</div></div>
+      </div>
     </div>
 
-    <!-- ══ INCENTIVE ══ -->
     <div class="panel" id="panel-incentive">
-      <div style="display:none"><span id="incGreen"></span><span id="incYellow"></span><span id="incRed"></span><span id="incGrey"></span></div>
+      <div style="display:none"><span id="incGreen"></span><span id="incYellow"></span><span id="incRed"></span><span id="incGrey"></span><span id="incDateInfo"></span></div>
       <div class="inc-grid" id="incGrid"><div class="no-data">Loading…</div></div>
     </div>
 
@@ -701,6 +737,7 @@ button,input,select{font-family:inherit}
       </div>
 
       <!-- OT STATS -->
+      <div id="storeBody" style="display:none"></div>
       <div class="stats-row">
         <div class="stat-card sc-blue">
           <div class="stat-lbl">Total Units</div>
@@ -733,11 +770,12 @@ button,input,select{font-family:inherit}
               <button class="pill active" id="otChartUnit"  onclick="setOTChartMode('unit')"  style="font-size:10px;padding:3px 9px">Units</button>
               <button class="pill"        id="otChartValue" onclick="setOTChartMode('value')" style="font-size:10px;padding:3px 9px">Value</button>
             </div>
+            <span class="card-sub" id="otChSub"></span>
           </div>
-          <div class="card-body"><canvas id="otLineChart" height="185"></canvas></div>
+          <div class="card-body"><canvas id="otChart" height="185"></canvas></div>
         </div>
         <div class="card" style="margin-bottom:0">
-          <div class="card-hdr"><div class="card-title">🏢 By Team Leader</div></div>
+          <div class="card-hdr"><div class="card-title">🏢 By Team Leader</div><span class="card-sub" id="otTLChSub"></span></div>
           <div class="card-body"><canvas id="otTLChart" height="185"></canvas></div>
         </div>
       </div>
