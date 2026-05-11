@@ -1190,7 +1190,7 @@ function initApp(){
   document.getElementById('datePick').value=tStr;
   startClock();startCD();
   // Load master data first (PA list, prices) — then it triggers loadData and loadLeaveData
-  setTimeout(function(){loadMasterData();},50);
+  loadMasterData();
   document.getElementById('datePick').addEventListener('change',function(){
     var val=this.value||'';
     var monthStr=val.substring(0,7);
@@ -1265,6 +1265,10 @@ function initApp(){
     setOTMode('month');
     var now=new Date();
     var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    // Auto-select most recent month that has off-take data
+    var otMonths=new Set();
+    allData.forEach(function(d){if((d.offtake||[]).length>0&&d.date)otMonths.add(d.date.substring(0,7));});
+    if(otMonths.size>0){var sortedM=Array.from(otMonths).sort();ym=sortedM[sortedM.length-1];}
     document.getElementById('otMonthPick').value=ym;
     fetchAndRenderOT();
   });
@@ -1456,9 +1460,16 @@ function processData(rows){
   MASTER.forEach(function(m){var key=(m.pa+'|'+m.store).toLowerCase();var inR=inMapAtt[key],outR=outMapAtt[key];var status,dur=null,inT='—',outT='—';if(!inR&&!outR){status='absent';}else if(inR&&!outR){status='in-progress';inT=inR.time;}else{inT=inR?inR.time:'—';outT=outR.time;if(inR&&outR){var ip=inT.split(':'),op=outT.split(':');var d2=(parseInt(op[0])*60+parseInt(op[1]))-(parseInt(ip[0])*60+parseInt(ip[1]));dur=d2>0?d2:null;}status=dur&&dur>=480?'disciplined':'short';}recordAttendance(dpVal,m.pa+'|'+m.store,status,dur,inT,outT);});
 
   renderPhotos();renderTable();renderIncentive();
+  // Re-render active tab if not overview
+  var activeTab=document.querySelector('.tab.active');
+  if(activeTab){
+    var tid=activeTab.id.replace('tab-','');
+    if(tid==='incentive')renderIncentive();
+    if(tid==='insights')renderInsights();
+  }
   // Re-render multiple times to ensure live GPS from Google Sheet is applied
   setTimeout(function(){renderPhotos();renderTable();renderTL();},1500);
-  setTimeout(function(){renderPhotos();renderTable();renderTL();},4000);
+  // 4s re-render removed for speed
   // Defer chart rendering to ensure canvas is visible
   setTimeout(function(){renderActChart();},50);
   renderOT('daily');renderAttendance();
@@ -1472,6 +1483,10 @@ function switchTab(id){
     setOTMode('month');
     var now=new Date();
     var ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    // Auto-select most recent month that has off-take data
+    var otMonths=new Set();
+    allData.forEach(function(d){if((d.offtake||[]).length>0&&d.date)otMonths.add(d.date.substring(0,7));});
+    if(otMonths.size>0){var sortedM=Array.from(otMonths).sort();ym=sortedM[sortedM.length-1];}
     document.getElementById('otMonthPick').value=ym;
     fetchAndRenderOT();
     buildBrandList();
@@ -1650,8 +1665,10 @@ function fetchAndRenderOT(){
     var mapped=fetched.map(function(c){return{pa:c.pa||'',store:c.store||'',type:c.type||'',status:c.type==='Check-In'?'in':'out',time:c.time||'',date:c.date||fromDate,lat:c.lat,lng:c.lng,offtake:c.offtake||[],tl:paTLMap[(c.pa||'').toLowerCase().trim()]||''};});
     renderOT(isRange||isMonth?'range':'daily',mapped);
   },function(e){
-    setStatus('error','Failed: '+(e&&e.message?e.message:'error'));
-    setTimeout(function(){document.getElementById('stbar').classList.remove('show');},5000);
+    setStatus('error','Failed to load: '+(e&&e.message?e.message:'check connection'));
+    // Fallback: use already-loaded allData
+    renderOT(isRange||isMonth?'range':'daily',allData);
+    setTimeout(function(){document.getElementById('stbar').classList.remove('show');},4000);
   });
 }
 
@@ -2143,7 +2160,16 @@ function renderIncentive(){
   var inMap={},outMap={};
   function normKey(s){return s.replace(/ /g,' ').replace(/\s+/g,' ').trim().toLowerCase();}
   dayData.forEach(function(d){var key=normKey(d.pa)+'|'+normKey(d.store);if(d.status==='in'&&!inMap[key])inMap[key]={pa:d.pa,store:d.store,time:d.time,lat:d.lat,lng:d.lng};if(d.status==='out'&&!outMap[key])outMap[key]={pa:d.pa,store:d.store,time:d.time,lat:d.lat,lng:d.lng};});
-  if(!dayData.length){document.getElementById('incGrid').innerHTML='<div style="padding:20px;text-align:center;color:#6b7280;font-size:13px">No data for '+dpVal+'. Please refresh.</div>';document.getElementById('incGreen').textContent='0';document.getElementById('incYellow').textContent='0';document.getElementById('incRed').textContent='0';document.getElementById('incGrey').textContent=MASTER.length;return;}
+  if(!dayData.length){
+    // If today has no data, try most recent date
+    if(allData.length>0){
+      var dates=[...new Set(allData.map(function(d){return d.date;}).filter(Boolean))].sort();
+      var lastD=dates[dates.length-1];
+      if(lastD){dpVal=lastD;dayData=allData.filter(function(d){return d.date===lastD;});}
+    }
+    if(!dayData.length){document.getElementById('incGrid').innerHTML='<div style="padding:20px;text-align:center;color:#6b7280;font-size:13px">No data yet — click Refresh.</div>';return;}
+  }
+  if(false){document.getElementById('incGreen').textContent='0';document.getElementById('incYellow').textContent='0';document.getElementById('incRed').textContent='0';document.getElementById('incGrey').textContent=MASTER.length;return;}
   function getDuration(inT,outT){if(!inT||!outT)return null;var ip=inT.split(':'),op=outT.split(':');var diff=(parseInt(op[0])*60+parseInt(op[1]))-(parseInt(ip[0])*60+parseInt(ip[1]));return diff>0?diff:null;}
   function getStatus(m){var key=normKey(m.pa)+'|'+normKey(m.store);var inRec=inMap[key],outRec=outMap[key];if(!inRec&&!outRec)return{status:'grey',label:'Absent',dur:null,inT:'—',outT:'—',lat:null,lng:null};if(inRec&&!outRec){var nowMins=now.getHours()*60+now.getMinutes();var ip=inRec.time.split(':');var soFar=nowMins-(parseInt(ip[0])*60+parseInt(ip[1]));return{status:'yellow',label:'In Store',dur:soFar>0?soFar:null,inT:inRec.time,outT:'Still in',lat:inRec.lat,lng:inRec.lng};}var dur=getDuration(inRec.time,outRec.time);if(!dur)return{status:'grey',label:'Data Error',dur:null,inT:inRec.time,outT:outRec.time,lat:inRec.lat,lng:inRec.lng};var s=dur>=480?'green':'red';return{status:s,label:s==='green'?'Disciplined ✅':'Short Day ❌',dur:dur,inT:inRec.time,outT:outRec.time,lat:inRec.lat,lng:inRec.lng};}
   function fmtDur(mins){if(mins===null)return'—';return Math.floor(mins/60)+'h '+(mins%60)+'m';}
