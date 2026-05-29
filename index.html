@@ -533,7 +533,7 @@ button,input,select{font-family:inherit}
         <div class="card-hdr">
           <div class="card-title">📸 PA Field Activity</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <input type="text" id="srchInput" class="search-inp" placeholder="Search PA…" style="width:150px" oninput="renderPhotos()"/>
+            <input type="text" id="srchInput" class="search-inp" placeholder="Search PA…" style="width:150px"/>
             <span class="card-sub" id="phSub"></span>
           </div>
         </div>
@@ -556,7 +556,7 @@ button,input,select{font-family:inherit}
         <div class="card">
           <div class="card-hdr">
             <div class="card-title">📋 All Records <span id="recCount" style="font-size:11px;font-weight:400;color:var(--text3)"></span></div>
-            <input type="text" id="tblSearch" class="search-inp" placeholder="Search…" style="width:130px" oninput="renderTable()"/>
+            <input type="text" id="tblSearch" class="search-inp" placeholder="Search…" style="width:130px"/>
           </div>
           <div class="tbl-wrap">
             <table class="tbl" id="tblBody">
@@ -584,7 +584,7 @@ button,input,select{font-family:inherit}
               <button class="pill"        id="attViewGPS"  onclick="setAttView(this)">GPS</button>
               <button class="pill"        id="attViewBoth" onclick="setAttView(this)">All</button>
             </div>
-            <input type="text" id="attSearch" class="search-inp" placeholder="Search PA…" style="width:140px" oninput="renderAttendance()"/>
+            <input type="text" id="attSearch" class="search-inp" placeholder="Search PA…" style="width:140px"/>
           </div>
         </div>
         <div class="mtd-scroll">
@@ -962,6 +962,10 @@ function gasCall(action,params,onSuccess,onFailure){
     .catch(function(e){if(onFailure)onFailure(e);else console.warn('gasCall failed:',e);});
 }
 var SECS=30,allData=[],photoFilter='all',tableFilter='all',cdTimer=null,cdVal=SECS,isLoading=false;
+var loadedRange={from:'',to:''}; // tracks date range currently cached in allData
+function debounce(fn,ms){var t=null;return function(){var ctx=this,args=arguments;clearTimeout(t);t=setTimeout(function(){fn.apply(ctx,args);},ms||200);};}
+function isDateInLoaded(d){return d&&loadedRange.from&&loadedRange.to&&d>=loadedRange.from&&d<=loadedRange.to;}
+function isRangeInLoaded(from,to){return from&&to&&loadedRange.from&&loadedRange.to&&from>=loadedRange.from&&to<=loadedRange.to;}
 var leaveData={}; // { paCode: { 'YYYY-MM-DD': 'dayoff'|'leave' } }
 var leaveByPA={};  // { paName(lower): { 'YYYY-MM-DD': 'dayoff'|'leave' } }
 var publicHolidays=[]; // dates that are public holidays — excluded from working days
@@ -1194,10 +1198,22 @@ function initApp(){
   document.getElementById('datePick').addEventListener('change',function(){
     var val=this.value||'';
     var monthStr=val.substring(0,7);
+    // If date is already within cached range, just re-render (instant) — skip server fetch
+    if(isDateInLoaded(val)){
+      renderPhotos();renderTable();renderActChart();renderTL();renderIncentive();renderAttendance();
+      if(document.getElementById('panel-offtake').classList.contains('active'))fetchAndRenderOT();
+      return;
+    }
     loadLeaveData(monthStr);
     loadData();
   });
-  document.getElementById('tlPick').addEventListener('change',function(){renderPhotos();renderTable();renderTL();renderIncentive();if(document.getElementById('panel-offtake').classList.contains('active'))renderOT('daily');});
+  document.getElementById('tlPick').addEventListener('change',function(){
+    // Mirror top TL filter to off-take TL filter for consistency
+    var otTL=document.getElementById('otTLFilter');
+    if(otTL){var v=this.value;for(var i=0;i<otTL.options.length;i++){if(otTL.options[i].value===v){otTL.value=v;break;}}}
+    renderPhotos();renderTable();renderTL();renderIncentive();
+    if(document.getElementById('panel-offtake').classList.contains('active'))fetchAndRenderOT();
+  });
   document.getElementById('btnRefresh').addEventListener('click',manualRefresh);
   // Safe event wiring — use helper to avoid null crashes
   function on(id,ev,fn){var el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
@@ -1214,10 +1230,10 @@ function initApp(){
   on('tf-all','click',function(){setTableFilter('all');});
   on('tf-in','click',function(){setTableFilter('in');});
   on('tf-out','click',function(){setTableFilter('out');});
-  on('srchInput','input',renderTable);
-  on('tblSearch','input',renderTable);
+  on('srchInput','input',debounce(function(){renderPhotos();renderTable();},200));
+  on('tblSearch','input',debounce(renderTable,200));
   on('lbClose','click',closeLB);
-  on('attSearch','input',renderAttendance);
+  on('attSearch','input',debounce(renderAttendance,200));
   on('attStartDate','change',renderAttendance);
   on('attMonthPick','change',function(){
     var m=this.value;if(!m)return;
@@ -1276,7 +1292,13 @@ function initApp(){
   document.getElementById('otFrom2').addEventListener('change',fetchAndRenderOT);
   document.getElementById('otTo').addEventListener('change',fetchAndRenderOT);
   document.getElementById('otMonthPick').addEventListener('change',fetchAndRenderOT);
-  document.getElementById('otTLFilter').addEventListener('change',fetchAndRenderOT);
+  document.getElementById('otTLFilter').addEventListener('change',function(){
+    // Mirror off-take TL filter back to top TL filter
+    var topTL=document.getElementById('tlPick');
+    if(topTL){var v=this.value;for(var i=0;i<topTL.options.length;i++){if(topTL.options[i].value===v){topTL.value=v;break;}}}
+    renderPhotos();renderTable();renderTL();renderIncentive();
+    fetchAndRenderOT();
+  });
   document.getElementById('lb').addEventListener('click',function(e){if(e.target===this)closeLB();});
 }
 
@@ -1379,6 +1401,7 @@ function loadData(){
     isLoading=false;if(btn)btn.style.opacity='1';
     if(!r){setStatus('error','No response from server');return;}
     if(r.error){setStatus('error','Error: '+r.error);return;}
+    loadedRange={from:monthStart,to:todayStr};
     processData(r.checkins||[]);
     setStatus('ok','✅ '+(r.checkins?r.checkins.length:0)+' records loaded (MTD)');
     setTimeout(function(){document.getElementById('stbar').classList.remove('show');},4000);
@@ -1467,9 +1490,6 @@ function processData(rows){
     if(tid==='incentive')renderIncentive();
     if(tid==='insights')renderInsights();
   }
-  // Re-render multiple times to ensure live GPS from Google Sheet is applied
-  setTimeout(function(){renderPhotos();renderTable();renderTL();},1500);
-  // 4s re-render removed for speed
   // Defer chart rendering to ensure canvas is visible
   setTimeout(function(){renderActChart();},50);
   renderOT('daily');renderAttendance();
@@ -1656,6 +1676,12 @@ function fetchAndRenderOT(){
   else if(isMonth){var mp=document.getElementById('otMonthPick').value||'';if(mp){fromDate=mp+'-01';var parts=mp.split('-');var lastDay=new Date(parseInt(parts[0]),parseInt(parts[1]),0).getDate();toDate=mp+'-'+String(lastDay).padStart(2,'0');}}
   if(!fromDate){renderOT('daily',allData);return;}
   if(fromDate===mainDp&&toDate===mainDp){renderOT('daily',allData);return;}
+  // FAST PATH: if requested range is already in allData cache, filter in-memory (instant, no server hit)
+  if(isRangeInLoaded(fromDate,toDate||fromDate)){
+    var cached=allData.filter(function(d){var dd=d.date||'';return dd>=fromDate&&dd<=(toDate||fromDate);});
+    renderOT(isRange||isMonth?'range':'daily',cached);
+    return;
+  }
   setStatus('loading','Loading off-take data for '+fromDate+(toDate&&toDate!==fromDate?' → '+toDate:'')+'...');
   gasCall('getCheckinData',{date:fromDate,dateTo:toDate||fromDate},function(r){
     setStatus('ok','✅ Off-take data loaded');
