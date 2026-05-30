@@ -468,6 +468,7 @@ button,input,select{font-family:inherit}
 
   <!-- FILTER BAR -->
   <div class="filterbar">
+    <span id="userBadge" style="display:none;background:#1d4ed8;color:#fff;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-right:6px"></span>
     <span class="fl">Date</span>
     <input type="date" id="datePick" class="fi"/>
     <div class="fsep"></div>
@@ -963,6 +964,34 @@ function gasCall(action,params,onSuccess,onFailure){
 }
 var SECS=30,allData=[],photoFilter='all',tableFilter='all',cdTimer=null,cdVal=SECS,isLoading=false;
 var loadedRange={from:'',to:''}; // tracks date range currently cached in allData
+function applyTLLock(){
+  var badge=document.getElementById('userBadge');
+  if(badge){
+    if(currentUserTL){badge.textContent='👤 '+currentUserTL;badge.style.display='inline-block';}
+    else{badge.textContent='👑 Admin';badge.style.display='inline-block';badge.style.background='#0b1f3a';}
+  }
+  // When a TL is logged in, lock the TL filter to their team and disable dropdown
+  if(!currentUserTL)return;
+  var tlPick=document.getElementById('tlPick');
+  if(!tlPick)return;
+  var found=false;
+  for(var i=0;i<tlPick.options.length;i++){
+    if(tlPick.options[i].value===currentUserTL||tlPick.options[i].text===currentUserTL){
+      tlPick.value=tlPick.options[i].value;found=true;break;
+    }
+  }
+  if(!found){var o=document.createElement('option');o.value=currentUserTL;o.text=currentUserTL;tlPick.appendChild(o);tlPick.value=currentUserTL;}
+  tlPick.disabled=true;
+  tlPick.title='Locked to your team: '+currentUserTL;
+  // Mirror to off-take TL filter if it exists
+  var otTL=document.getElementById('otTLFilter');
+  if(otTL){
+    var ok=false;
+    for(var j=0;j<otTL.options.length;j++){if(otTL.options[j].value===currentUserTL){otTL.value=currentUserTL;ok=true;break;}}
+    if(!ok){var oo=document.createElement('option');oo.value=currentUserTL;oo.text=currentUserTL;otTL.appendChild(oo);otTL.value=currentUserTL;}
+    otTL.disabled=true;
+  }
+}
 function debounce(fn,ms){var t=null;return function(){var ctx=this,args=arguments;clearTimeout(t);t=setTimeout(function(){fn.apply(ctx,args);},ms||200);};}
 function isDateInLoaded(d){return d&&loadedRange.from&&loadedRange.to&&d>=loadedRange.from&&d<=loadedRange.to;}
 function isRangeInLoaded(from,to){return from&&to&&loadedRange.from&&loadedRange.to&&from>=loadedRange.from&&to<=loadedRange.to;}
@@ -1149,10 +1178,22 @@ function esc(d){return encodeURIComponent(JSON.stringify(d));}
 // ── PIN ──
 var LOGIN_PW='StockAdmin@Abbott';
 var LOGIN_PIN='8888';
+var ADMIN_CODE='0000';
+var TL_CODES={
+  '1001':'Sean Chamroeun',
+  '1002':'Chin Pholly',
+  '1003':'Chhay Setha',
+  '1004':'Lon Sreypom',
+  '1005':'Mao Soklim'
+};
+var currentUserTL=null; // null = admin, otherwise the TL's name (read-only mode)
 function doLogin(){
   var pwInput=document.getElementById('pwInput')||document.getElementById('pinInput');
   var val=pwInput?pwInput.value.trim():'';
-  if(val===LOGIN_PIN||val===LOGIN_PW){
+  var isAdmin=(val===ADMIN_CODE||val===LOGIN_PIN||val===LOGIN_PW);
+  var tlMatch=TL_CODES[val]||null;
+  if(isAdmin||tlMatch){
+    currentUserTL=isAdmin?null:tlMatch;
     var ls=document.getElementById('loginScreen')||document.getElementById('loginWrap');
     var app=document.getElementById('app')||document.getElementById('appWrap');
     if(ls)ls.style.display='none';
@@ -1193,6 +1234,7 @@ function initApp(){
   var tStr=y+'-'+(m<10?'0':'')+m+'-'+(d<10?'0':'')+d;
   document.getElementById('datePick').value=tStr;
   startClock();startCD();
+  applyTLLock(); // show admin/TL badge + lock dropdown immediately
   // Load master data first (PA list, prices) — then it triggers loadData and loadLeaveData
   loadMasterData();
   document.getElementById('datePick').addEventListener('change',function(){
@@ -1340,6 +1382,7 @@ function loadMasterData(){
           var opts='<option value="all">All Team Leaders</option>';
           tlNames.forEach(function(t){opts+='<option>'+t+'</option>';});
           tlPick.innerHTML=opts;
+          applyTLLock();
         }
         var sc2=document.getElementById('paBadge')||document.getElementById('storeCnt');if(sc2)sc2.textContent=MASTER.length+' PAs';
         setStatus('ok','✅ Master data loaded — '+MASTER.length+' PAs · '+Object.keys(PRICES).length+' SKUs');
