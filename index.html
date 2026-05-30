@@ -1502,9 +1502,10 @@ function processData(rows){
       document.getElementById('datePick').value=dpVal;
     }
   }
-  var inn=todayData.filter(function(d){return d.status==='in';}).length;
-  var out=todayData.filter(function(d){return d.status==='out';}).length;
   var tlPickVal2=(document.getElementById('tlPick')||{value:'all'}).value||'all';
+  var scopedToday=todayData.filter(function(d){return tlPickVal2==='all'||(d.tl||'')===tlPickVal2;});
+  var inn=scopedToday.filter(function(d){return d.status==='in';}).length;
+  var out=scopedToday.filter(function(d){return d.status==='out';}).length;
   var tot=MASTER.filter(function(m){return tlPickVal2==='all'||m.tl===tlPickVal2;}).length;
   var pct=tot>0?Math.min(Math.round(((inn+out)/tot)*100),100):0;
   var _st=document.getElementById('sTotalPA')||document.getElementById('stTotal');if(_st)_st.textContent=tot;
@@ -1670,7 +1671,9 @@ function renderTL(){
       if(lt){var pk=codeToPA[String(paCode).trim()];if(pk)leaveToday[pk]=lt;}
     });
   }
-  var tlNames=Object.keys(TL);var totalIn=0,totalOut=0,totalLeave=0;var html='';
+  var tlPickValTL=(document.getElementById('tlPick')||{value:'all'}).value||'all';
+  var tlNames=Object.keys(TL).filter(function(t){return tlPickValTL==='all'||t===tlPickValTL;});
+  var totalIn=0,totalOut=0,totalLeave=0;var html='';
   tlNames.forEach(function(tl){
     var stores=TL[tl];var inn=0,out=0,pend=0,onLeave=0;
     var paHtml=stores.map(function(s){
@@ -1701,10 +1704,12 @@ function renderTL(){
     html+='<div class="tl-card"><div class="tl-hdr"><div class="tl-av">'+ini+'</div><div style="flex:1;min-width:0"><div class="tl-name">'+tl+'</div><div class="tl-stats"><span class="tl-stat in">✅ '+inn+' In</span><span class="tl-stat out">🔴 '+out+' Out</span><span class="tl-stat pend">⏳ '+pend+' Pending</span>'+(onLeave>0?'<span style="background:#eff6ff;color:#1a56db;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px">🔄 '+onLeave+' Leave</span>':'')+'<span class="tl-stat cov">'+pct+'%</span></div></div></div><div class="tl-prog"><div class="tl-progf" style="width:'+pct+'%;background:'+color+'"></div></div><div class="pa-list">'+paHtml+'</div></div>';
   });
   document.getElementById('tlGrid').innerHTML=html;
-  document.getElementById('tlTotalPA').textContent=MASTER.length;
+  // Compute scoped total PAs (respect TL filter)
+  var scopedTotalPAs=0;tlNames.forEach(function(t){scopedTotalPAs+=(TL[t]||[]).length;});
+  document.getElementById('tlTotalPA').textContent=scopedTotalPAs;
   document.getElementById('tlCheckedIn').textContent=totalIn;
   document.getElementById('tlCheckedOut').textContent=totalOut;
-  document.getElementById('tlPending').textContent=MASTER.length-totalIn-totalOut-totalLeave;
+  document.getElementById('tlPending').textContent=Math.max(0,scopedTotalPAs-totalIn-totalOut-totalLeave);
 }
 
 // ── OFF-TAKE (FIXED: passes toDate to server) ──
